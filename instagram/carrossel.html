@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>Carrossel Instagram · Construir o Futuro</title>
+<!--
+  Gerador dos carrosséis do programa para o Instagram (1080 × 1350 px).
+  Uso: carrossel.html?e=1&s=0  (e = eixo 1–5; s = diapositivo: 0 capa, 1 introdução,
+  2… propostas, último = apelo final). Os textos vêm de ../conteudo/programa.json.
+-->
+<style>
+@font-face { font-family: 'Montserrat'; src: url('../fonts/montserrat.woff2') format('woff2'); font-weight: 600 800; }
+@font-face { font-family: 'Source Serif 4'; src: url('../fonts/source-serif-4.woff2') format('woff2'); font-weight: 400 600; }
+:root {
+  --marinho: #06335C; --marinho-900: #03243F; --azul: #055695; --petroleo: #129AA5; --petroleo-escuro: #0B7880;
+  --ouro: #EBAB04; --papel: #FAF8F4; --tinta-suave: #3D5670;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1350px; overflow: hidden; }
+body { font-family: 'Source Serif 4', Georgia, serif; color: var(--marinho); }
+.slide { position: relative; width: 1080px; height: 1350px; padding: 72px 80px; display: flex; flex-direction: column; }
+.claro { background-color: var(--papel);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='41.57'%3E%3Cpath d='M0 0 72 41.57M0 41.57 72 0' stroke='%2306335C' stroke-opacity='.05' fill='none'/%3E%3C/svg%3E");
+  background-size: 72px 41.57px; }
+.escuro { background-color: var(--marinho-900); color: #fff;
+  background-image: linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
+  background-size: 36px 36px; }
+
+.topo { display: flex; justify-content: space-between; align-items: center;
+  font-family: 'Montserrat'; font-weight: 800; font-size: 25px; letter-spacing: .06em; text-transform: uppercase; }
+.marca { display: flex; align-items: center; gap: 14px; }
+.marca svg { width: 30px; height: auto; }
+.topo .dir { font-weight: 700; font-size: 20px; letter-spacing: .14em; color: var(--tinta-suave); }
+.escuro .topo .dir { color: rgba(255,255,255,.65); }
+
+.rotulo { display: flex; align-items: center; gap: 18px; margin-top: 64px;
+  font-family: 'Montserrat'; font-weight: 700; font-size: 24px; letter-spacing: .16em; text-transform: uppercase; color: var(--petroleo-escuro); }
+.rotulo b { border: 3px solid currentColor; padding: 4px 12px; letter-spacing: .08em; }
+.regua { position: relative; width: 90px; height: 2px; background: currentColor; opacity: .6; }
+.regua::before, .regua::after { content: ''; position: absolute; top: -8px; width: 2px; height: 18px; background: currentColor; }
+.regua::before { left: 0; } .regua::after { right: 0; }
+.escuro .rotulo { color: var(--ouro); }
+
+/* Capa */
+.capa h1 { font-family: 'Montserrat'; font-weight: 800; text-transform: uppercase; letter-spacing: -.02em; margin-top: 30px; }
+.capa h1 .k { display: block; font-size: 62px; line-height: 1; color: var(--azul); }
+.capa h1 .t { display: block; font-size: 92px; line-height: .98; color: var(--petroleo); margin-top: 10px; }
+.ilustracao { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 0; padding: 20px 0 10px; }
+.ilustracao svg { width: 100%; height: 100%; overflow: visible; }
+
+.rodape { display: flex; justify-content: space-between; align-items: center;
+  font-family: 'Montserrat'; font-weight: 700; font-size: 22px; letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-suave); }
+.escuro .rodape { color: rgba(255,255,255,.65); }
+.escuro .desliza { color: #fff; }
+.desliza { display: flex; align-items: center; gap: 14px; color: var(--marinho); }
+.desliza i { width: 70px; border-top: 3px dashed var(--ouro); }
+.desliza svg { width: 22px; }
+
+/* Introdução */
+.intro-texto { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.intro-texto p { font-size: 72px; line-height: 1.22; font-weight: 600; max-width: 900px; }
+.intro-texto .barra { width: 120px; height: 10px; background: var(--ouro); margin-bottom: 48px; }
+.intro-texto .sub { font-family: 'Montserrat'; font-weight: 700; font-size: 30px; letter-spacing: .08em; text-transform: uppercase; color: var(--petroleo); margin-top: 56px; }
+
+/* Proposta */
+.proposta { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.num { font-family: 'Montserrat'; font-weight: 800; font-size: 230px; line-height: .85; color: var(--azul); letter-spacing: -.04em; }
+.num small { font-size: 60px; color: var(--tinta-suave); letter-spacing: 0; margin-left: 10px; }
+.compromisso { font-family: 'Montserrat'; font-weight: 700; font-size: 26px; letter-spacing: .14em; text-transform: uppercase; color: var(--petroleo-escuro); margin: 48px 0 22px; display: flex; align-items: center; gap: 16px; }
+.compromisso::after { content: ''; flex: 1; border-top: 2px dashed rgba(6,51,92,.35); }
+.proposta p { font-size: 60px; line-height: 1.24; max-width: 920px; }
+.proposta p.longo { font-size: 52px; }
+.progresso { height: 110px; margin-bottom: 56px; }
+.progresso svg { height: 100%; width: auto; overflow: visible; }
+
+/* Fecho */
+.fecho { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.fecho .logo { width: 360px; margin-bottom: 64px; }
+.fecho h2 { font-family: 'Montserrat'; font-weight: 800; font-size: 64px; line-height: 1.08; text-transform: uppercase; letter-spacing: -.01em; }
+.fecho h2 em { font-style: normal; color: var(--ouro); }
+.fecho p { font-size: 44px; line-height: 1.35; margin-top: 36px; color: rgba(255,255,255,.88); max-width: 880px; }
+.fecho .datas { margin-top: 56px; font-family: 'Montserrat'; font-weight: 700; font-size: 28px; letter-spacing: .12em; text-transform: uppercase; color: var(--ouro);
+  border: 3px solid var(--ouro); padding: 14px 22px; align-self: flex-start; }
+</style>
+</head>
+<body>
+<div id="raiz"></div>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var E = Math.max(1, Math.min(5, +q.get('e') || 1));
+  var S = +q.get('s') || 0;
+
+  /* ---------- Motor isométrico (geometria do logótipo) ---------- */
+  var KX = 0.866, KY = 0.524, KZ = 1.08;
+  function p(x, y, z) { return [(x - y) * KX, (x + y) * KY - z * KZ]; }
+  var COR = {
+    azul:     ['#0162A6', '#014881', '#01325B'],
+    azulc:    ['#0A72BA', '#0A5A9C', '#063F70'],
+    petroleo: ['#03B0B8', '#0395A3', '#02727C'],
+    marinho:  ['#0A4F8A', '#063A6B', '#032646'],
+    ouro:     ['#EBAB04', '#B07402', '#CB8B02']
+  };
+  // Caixa x,y,z (base), w,d,h (dimensões). Faces visíveis: topo, esquerda (y+d), direita (x+w).
+  function caixa(x, y, z, w, d, h, cor) {
+    var c = COR[cor] || cor;
+    var poly = function (pts, f) {
+      return '<polygon points="' + pts.map(function (a) { var q = p(a[0], a[1], a[2]); return q[0].toFixed(2) + ',' + q[1].toFixed(2); }).join(' ') + '" fill="' + f + '"/>';
+    };
+    return {
+      k: x + y + z + (w + d) / 2, // ordem de desenho
+      pts: [[x,y,z],[x+w,y,z],[x+w,y+d,z],[x,y+d,z],[x,y,z+h],[x+w,y,z+h],[x+w,y+d,z+h],[x,y+d,z+h]],
+      svg: poly([[x,y+d,z],[x+w,y+d,z],[x+w,y+d,z+h],[x,y+d,z+h]], c[1]) +
+           poly([[x+w,y,z],[x+w,y+d,z],[x+w,y+d,z+h],[x+w,y,z+h]], c[2]) +
+           poly([[x,y,z+h],[x+w,y,z+h],[x+w,y+d,z+h],[x,y+d,z+h]], c[0])
+    };
+  }
+  // Contorno tracejado (peça por encaixar)
+  function fantasma(x, y, z, w, d, h) {
+    var L = function (a, b) { var A = p.apply(null, a), B = p.apply(null, b);
+      return '<line x1="' + A[0] + '" y1="' + A[1] + '" x2="' + B[0] + '" y2="' + B[1] + '"/>'; };
+    var t = [[x,y,z+h],[x+w,y,z+h],[x+w,y+d,z+h],[x,y+d,z+h]];
+    var s = '';
+    for (var i = 0; i < 4; i++) s += L(t[i], t[(i + 1) % 4]);
+    s += L([x+w,y,z+h],[x+w,y,z]) + L([x+w,y+d,z+h],[x+w,y+d,z]) + L([x,y+d,z+h],[x,y+d,z]) +
+         L([x+w,y,z],[x+w,y+d,z]) + L([x+w,y+d,z],[x,y+d,z]);
+    return { k: x + y + z + (w + d) / 2 + 0.01, pts: t.concat([[x+w,y,z],[x+w,y+d,z],[x,y+d,z]]),
+      svg: '<g fill="none" stroke="#E39A06" stroke-width="0.045" stroke-dasharray="0.16 0.12" stroke-linecap="round">' + s + '</g>' };
+  }
+  function trajeto(pontos) {
+    var d = pontos.map(function (a, i) { var q = p.apply(null, a); return (i ? 'L' : 'M') + q[0] + ' ' + q[1]; }).join(' ');
+    return { k: -1, pts: pontos, svg: '<path d="' + d + '" fill="none" stroke="#E39A06" stroke-width="0.045" stroke-dasharray="0.16 0.12" stroke-linecap="round"/>' };
+  }
+  function cena(pecas, margem) {
+    pecas.sort(function (a, b) { return a.k - b.k; });
+    var xs = [], ys = [];
+    pecas.forEach(function (o) { o.pts.forEach(function (a) { var q = p.apply(null, a); xs.push(q[0]); ys.push(q[1]); }); });
+    var m = margem || 0.3, x0 = Math.min.apply(null, xs) - m, y0 = Math.min.apply(null, ys) - m;
+    var w = Math.max.apply(null, xs) + m - x0, h = Math.max.apply(null, ys) + m - y0;
+    return '<svg viewBox="' + [x0, y0, w, h].join(' ') + '" preserveAspectRatio="xMidYMid meet" aria-hidden="true">' +
+      pecas.map(function (o) { return o.svg; }).join('') + '</svg>';
+  }
+
+  /* ---------- Ilustrações de capa ---------- */
+  var ILUSTRA = {
+    // 1 · Profissão com futuro: degraus que sobem, do internato à reforma; o cubo dourado no topo.
+    1: function () {
+      var c = [], cores = ['petroleo', 'azulc', 'azul', 'marinho'], h = [0.7, 1.45, 2.2, 2.95];
+      for (var i = 0; i < 4; i++) c.push(caixa(0, (3 - i) * 1.0, 0, 1.6, 1.0, h[i], cores[i]));
+      c.push(caixa(0.35, 0.05, h[3], 0.9, 0.9, 0.9, 'ouro'));
+      c.push(fantasma(0.35, -1.05, h[3] + 0.75, 0.9, 0.9, 0.9));
+      return cena(c);
+    },
+    // 2 · Conhecimento que transforma: camadas sobrepostas, como publicações empilhadas.
+    2: function () {
+      var c = [], cores = ['marinho', 'azul', 'petroleo', 'azulc', 'azul', 'petroleo', 'marinho'];
+      for (var i = 0; i < 7; i++) {
+        var off = (i % 2) * 0.35;
+        c.push(caixa(off, 0.35 - off, i * 0.42, 2.6, 2, 0.34, cores[i]));
+      }
+      c.push(caixa(1.0, 0.6, 7 * 0.42, 0.85, 0.85, 0.85, 'ouro'));
+      // pequena pilha ao lado
+      c.push(caixa(3.4, 0.6, 0, 1.2, 1.2, 0.34, 'petroleo'));
+      c.push(caixa(3.5, 0.5, 0.42, 1.2, 1.2, 0.34, 'azul'));
+      return cena(c);
+    },
+    // 3 · Futuro digital: uma grelha de "píxeis" com alturas diferentes; um lugar vazio por preencher.
+    3: function () {
+      var c = [], n = 5, alt = [
+        [0.5, 0.9, 1.4, 0.7, 0.4], [0.8, 1.6, 2.1, 1.2, 0.6], [1.2, 2.2, 0, 1.8, 0.9],
+        [0.6, 1.3, 1.9, 1.5, 0.7], [0.3, 0.7, 1.0, 0.8, 0.4]];
+      var cores = ['petroleo', 'azulc', 'azul', 'marinho'];
+      for (var i = 0; i < n; i++) for (var j = 0; j < n; j++) {
+        var h = alt[i][j];
+        if (!h) continue;
+        c.push(caixa(i * 0.62, j * 0.62, 0, 0.5, 0.5, h * 0.7, cores[Math.min(3, Math.floor(h * 1.6))]));
+      }
+      c.push(fantasma(2 * 0.62, 2 * 0.62, 0, 0.5, 0.5, 2.4 * 0.7));
+      c.push(caixa(2 * 0.62 + 2.6, 2 * 0.62 - 2.6, 1.4, 0.5, 0.5, 0.5, 'ouro'));
+      c.push(trajeto([[2*0.62+2.85, 2*0.62-2.35, 1.4], [2*0.62+0.25, 2*0.62+0.25, 2.4*0.7]]));
+      return cena(c);
+    },
+    // 4 · Posições com evidência: fundações largas, pilares e uma laje; a posição assenta na evidência.
+    4: function () {
+      var c = [];
+      c.push(caixa(0, 0, 0, 3.2, 3.2, 0.5, 'marinho'));
+      c.push(caixa(0.25, 0.25, 0.5, 2.7, 2.7, 0.45, 'azul'));
+      [[0.45, 0.45], [2.15, 0.45], [0.45, 2.15], [2.15, 2.15]].forEach(function (a) {
+        c.push(caixa(a[0], a[1], 0.95, 0.6, 0.6, 1.5, 'petroleo'));
+      });
+      c.push(caixa(0.25, 0.25, 2.45, 2.7, 2.7, 0.4, 'azulc'));
+      c.push(caixa(1.15, 1.15, 2.85, 0.9, 0.9, 0.9, 'ouro'));
+      return cena(c);
+    },
+    // 5 · Associação mais aberta: um recinto com uma abertura; o cubo dourado entra pelo tracejado.
+    5: function () {
+      var c = [], cores = ['azul', 'petroleo', 'marinho', 'azulc'];
+      var pos = [[0,0],[1,0],[2,0],[3,0],[0,1],[0,2],[0,3],[3,1],[3,2],[3,3],[1,3]]; // abertura em (2,3)
+      pos.forEach(function (a, i) { c.push(caixa(a[0] * 1.02, a[1] * 1.02, 0, 0.9, 0.9, 0.7 + (i % 3) * 0.25, cores[i % 4])); });
+      c.push(fantasma(2 * 1.02, 3 * 1.02, 0, 0.9, 0.9, 0.9));
+      c.push(caixa(2 * 1.02 + 0.2, 3 * 1.02 + 2.4, 0, 0.9, 0.9, 0.9, 'ouro'));
+      c.push(trajeto([[2 * 1.02 + 0.65, 3 * 1.02 + 2.4, 0], [2 * 1.02 + 0.45, 3 * 1.02 + 0.9, 0]]));
+      return cena(c);
+    }
+  };
+
+  // Barra de progresso: uma peça por proposta; as anteriores colocadas, a atual dourada, as seguintes por encaixar.
+  function progresso(total, atual) {
+    var c = [];
+    for (var i = 0; i < total; i++) {
+      var x = i * 1.0, y = -i * 1.0;   // em linha horizontal no ecrã
+      if (i < atual) c.push(caixa(x, y, 0, 0.85, 0.85, 0.85, i % 2 ? 'petroleo' : 'azul'));
+      else if (i === atual) c.push(caixa(x, y, 0, 0.85, 0.85, 0.85, 'ouro'));
+      else c.push(fantasma(x, y, 0, 0.85, 0.85, 0.85));
+    }
+    return cena(c, 0.1);
+  }
+
+  var CUBO = '<svg viewBox="690 218 276 336"><polygon points="697,302 828,225 958,305 828,383" fill="#EBAB04"/><polygon points="697,302 828,383 828,546 777,515 777,413 697,364" fill="#B07402"/><polygon points="828,383 958,305 958,468 828,546" fill="#CB8B02"/></svg>';
+  var SETA = '<svg viewBox="0 0 24 24"><path d="M4 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"/></svg>';
+  var esc = function (t) { return String(t).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); };
+
+  fetch('../conteudo/programa.json').then(function (r) { return r.json(); }).then(function (d) {
+    var eixo = d.eixos[E - 1];
+    var props = eixo.propostas;
+    var total = props.length + 3;               // capa + introdução + propostas + fecho
+    var resto = eixo.titulo.replace(/^Construir\s+/i, '');
+    var topo = function (dir) {
+      return '<div class="topo"><span class="marca">' + CUBO + 'Construir o Futuro</span><span class="dir">' + dir + '</span></div>';
+    };
+    var rodape = function (i, desliza) {
+      return '<div class="rodape"><span>Programa 2027–2029</span>' +
+        (desliza ? '<span class="desliza">Desliza <i></i>' + SETA + '</span>' : '<span>' + (i + 1) + ' / ' + total + '</span>') + '</div>';
+    };
+    var rot = '<div class="rotulo"><b>Eixo ' + E + '</b><span class="regua"></span><span>de 5</span></div>';
+    var html;
+
+    if (S === 0) {
+      html = '<section class="slide claro capa">' + topo('APMGF · Eleições 2026') + rot +
+        '<h1><span class="k">Construir</span><span class="t">' + esc(resto) + '</span></h1>' +
+        '<div class="ilustracao">' + ILUSTRA[E]() + '</div>' + rodape(S, true) + '</section>';
+    } else if (S === 1) {
+      html = '<section class="slide escuro">' + topo('Eixo ' + E) +
+        '<div class="intro-texto"><div class="barra"></div><p>' + esc(eixo.introducao) + '</p>' +
+        '<div class="sub">Por isso, comprometemo-nos a</div></div>' + rodape(S, true) + '</section>';
+    } else if (S >= 2 && S < total - 1) {
+      var i = S - 2, txt = props[i];
+      html = '<section class="slide claro">' + topo('Eixo ' + E + ' de 5') +
+        '<div class="proposta"><div class="progresso">' + progresso(props.length, i) + '</div>' +
+        '<div class="num">' + String(i + 1).padStart(2, '0') + '<small>/ ' + String(props.length).padStart(2, '0') + '</small></div>' +
+        '<div class="compromisso">Comprometemo-nos a</div>' +
+        '<p' + (txt.length > 130 ? ' class="longo"' : '') + '>' + esc(txt) + '</p></div>' + rodape(S, false) + '</section>';
+    } else {
+      html = '<section class="slide escuro">' + topo('Eixo ' + E + ' de 5') +
+        '<div class="fecho"><img class="logo" src="../img/logotipo.svg" alt="">' +
+        '<h2>Cada proposta é uma peça.<br><em>Falta a tua.</em></h2>' +
+        '<p>Lê o programa completo e deixa o teu contributo. Link na bio.</p>' +
+        '<div class="datas">Votação · 18 a 28 de novembro</div></div>' + rodape(S, false) + '</section>';
+    }
+    document.getElementById('raiz').innerHTML = html;
+    document.body.setAttribute('data-total', total);
+    document.fonts.ready.then(function () { document.body.setAttribute('data-pronto', '1'); });
+  });
+})();
+</script>
+</body>
+</html>
