@@ -8,7 +8,7 @@ window.SITE_CONFIG = {
   nomeLista: 'Construir o Futuro',
 
   // Endereço público do site (usado no botão "Partilhar"). Pode ficar vazio: usa o endereço atual.
-  urlSite: 'https://rdiogoorodrigues.github.io/construir-o-futuro/',
+  urlSite: 'https://rdiogoorodrigues.github.io',
 
   email: 'listaconstruirofuturo@gmail.com',
 
@@ -31,7 +31,7 @@ window.SITE_CONFIG = {
    * mostra a mensagem de sucesso mas não envia nada.
    */
   formulario: {
-    endpoint: '',
+    endpoint: 'https://script.google.com/macros/s/AKfycbx89116VRfr9mbpbl7g3h1kJYdfoKbU26IdJkgEdVbJD41UqNb2mZExmz58Q3kkbf4/exec',
   },
 
   /*
