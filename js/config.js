@@ -8,7 +8,7 @@ window.SITE_CONFIG = {
   nomeLista: 'Construir o Futuro',
 
   // Endereço público do site (usado no botão "Partilhar"). Pode ficar vazio: usa o endereço atual.
-  urlSite: 'https://rdiogoorodrigues.github.io',
+  urlSite: 'https://construirofuturo.github.io/',
 
   email: 'listaconstruirofuturo@gmail.com',
 
