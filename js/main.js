@@ -328,7 +328,7 @@
 
     var endpoint = C.formulario && C.formulario.endpoint;
     var pedido = endpoint
-      ? fetch(endpoint, { method: 'POST', body: JSON.stringify(dados) }) // text/plain: evita pedido CORS prévio
+      ? fetch(endpoint, { method: 'POST', body: JSON.stringify(dados), credentials: 'omit', redirect: 'follow' }) // text/plain sem cookies: não depende da sessão Google de quem envia
           .then(function (r) { if (!r.ok) throw new Error('http'); return r.json(); })
       : new Promise(function (res) { setTimeout(function () { res({ ok: true, demo: true }); }, 700); });
 
