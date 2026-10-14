@@ -31,7 +31,7 @@ window.SITE_CONFIG = {
    * mostra a mensagem de sucesso mas não envia nada.
    */
   formulario: {
-    endpoint: 'https://script.google.com/macros/s/AKfycbx89116VRfr9mbpbl7g3h1kJYdfoKbU26IdJkgEdVbJD41UqNb2mZExmz58Q3kkbf4/exec',
+    endpoint: 'https://script.google.com/macros/s/AKfycbyu_n23kIn8zlYna1uOFsAmccZLhpZ24ZauHYGG7G5f_2-NTp3W8Vitd5UC47OabR0/exec',
   },
 
   /*
