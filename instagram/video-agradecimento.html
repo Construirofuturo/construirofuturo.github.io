@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>Vídeo de agradecimento · Construir o Futuro</title>
+<!--
+  Vídeo de agradecimento (1080 × 1920, ~22 s). A animação é determinística:
+  window.render(t) desenha o instante t (segundos). Pré-visualizar no browser: ?play=1
+  Fotografias: lidas de ../fotos e ../conteudo/candidatos.json (recorte quadrado feito aqui, sem alterar os ficheiros).
+-->
+<style>
+@font-face { font-family: 'Montserrat'; src: url('../fonts/montserrat.woff2') format('woff2'); font-weight: 600 800; }
+@font-face { font-family: 'Source Serif 4'; src: url('../fonts/source-serif-4.woff2') format('woff2'); font-weight: 400 600; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1080px; height: 1920px; overflow: hidden; background: #FAF8F4; }
+svg { display: block; }
+.t-mont { font-family: 'Montserrat'; font-weight: 800; text-transform: uppercase; }
+.t-serif { font-family: 'Source Serif 4'; }
+</style>
+</head>
+<body>
+<svg id="palco" width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <pattern id="iso" width="72" height="41.57" patternUnits="userSpaceOnUse"><path d="M0 0 72 41.57M0 41.57 72 0" stroke="#06335C" stroke-opacity=".05" fill="none"/></pattern>
+    <linearGradient id="gAz" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#034C86"/><stop offset="1" stop-color="#0162A6"/></linearGradient>
+    <linearGradient id="gPe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#03B0B8"/><stop offset="1" stop-color="#038E9E"/></linearGradient>
+    <linearGradient id="gOu" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C98A02"/><stop offset="1" stop-color="#A06602"/></linearGradient>
+    <clipPath id="quad"><rect x="0" y="0" width="1" height="1"/></clipPath>
+  </defs>
+  <rect width="1080" height="1920" fill="#FAF8F4"/>
+  <rect width="1080" height="1920" fill="url(#iso)"/>
+
+  <!-- Logótipo (cena 1–3) -->
+  <g id="logo-g">
+    <svg x="190" y="300" width="700" height="700" viewBox="150 105 830 830" overflow="visible">
+      <path id="l-traco" d="M740 398 560 505 718 603 828 543" fill="none" stroke="#E39A06" stroke-width="4" stroke-dasharray="12 10"/>
+      <g id="l-pe"><polygon points="167,323 409,466 291,539 293,810 167,734" fill="url(#gPe)"/><polygon points="291,539 409,466 409,588 293,657" fill="#02727C"/></g>
+      <g id="l-to"><polygon points="193,308 520,123 669,212 482,321 567,372 435,450" fill="url(#gAz)"/><polygon points="482,321 669,212 669,286 545,358" fill="#013764"/><polygon points="435,450 567,372 567,493 435,572" fill="#024376"/></g>
+      <g id="l-ba"><polygon points="436,601 554,533 700,623 582,690" fill="#015FA0"/><polygon points="319,671 411,617 556,706 465,760" fill="#0161A3"/><polygon points="319,671 465,760 465,915 319,826" fill="#014881"/><polygon points="465,760 700,623 700,778 465,915" fill="#01325B"/></g>
+      <g id="l-ou"><polygon points="697,302 828,225 958,305 828,383" fill="#EBAB04"/><polygon points="697,302 828,383 828,546 777,515 777,413 697,364" fill="url(#gOu)"/><polygon points="828,383 958,305 958,468 828,546" fill="#CB8B02"/></g>
+    </svg>
+  </g>
+
+  <!-- Cubo de fotografias (cena 4–5) -->
+  <g id="fotos-g"></g>
+  <g id="ouro-final"></g>
+
+  <!-- Textos -->
+  <g id="txt"></g>
+
+  <!-- Marca fixa -->
+  <g transform="translate(90,250)">
+    <svg x="0" y="-26" width="30" height="36" viewBox="690 218 276 336"><polygon points="697,302 828,225 958,305 828,383" fill="#EBAB04"/><polygon points="697,302 828,383 828,546 777,515 777,413 697,364" fill="#B07402"/><polygon points="828,383 958,305 958,468 828,546" fill="#CB8B02"/></svg>
+    <text x="44" y="0" class="t-mont" font-size="28" letter-spacing="1.7" fill="#06335C">Construir o Futuro</text>
+  </g>
+</svg>
+<script>
+(function () {
+  var DUR = 22, NS = 'http://www.w3.org/2000/svg';
+  window.DURACAO = DUR;
+  var $ = function (id) { return document.getElementById(id); };
+  var clamp = function (v) { return Math.max(0, Math.min(1, v)); };
+  var fase = function (t, a, b) { return clamp((t - a) / (b - a)); };
+  var easeOut = function (x) { return 1 - Math.pow(1 - x, 3); };
+  var easeInOut = function (x) { return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+  // "assentar": passa ligeiramente e volta (peça a encaixar)
+  var assenta = function (x) { if (x <= 0) return 0; if (x >= 1) return 1; var c1 = 1.2, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+  var lerp = function (a, b, k) { return a + (b - a) * k; };
+
+  /* ---------- Textos ---------- */
+  var TXT = [
+    // [início, fim, y, linhas[[texto, tamanho, cor, família]]]
+    { a: 2.1, b: 7.6, y: 1210, l: [['Obrigado.', 150, '#055695', 'm'], ['A todos os que votaram.', 54, '#06335C', 's']] },
+    { a: 5.0, b: 7.6, y: 1470, l: [['A peça que faltava eram vocês.', 46, '#B07402', 's']] },
+    { a: 8.0, b: 11.4, y: 1180, l: [['Estamos', 112, '#055695', 'm'], ['preparados', 112, '#129AA5', 'm'], ['para construir o futuro.', 54, '#06335C', 's']] },
+    { a: 16.6, b: 22.5, y: 1390, l: [['Mandato 2027–2029', 32, '#0B7880', 'k'], ['Começamos', 92, '#055695', 'm'], ['a construir.', 92, '#129AA5', 'm'], ['Os próximos três anos constroem-se com cada sócio.', 40, '#06335C', 's'], ['Obrigado pela confiança.', 40, '#B07402', 's']] }
+  ];
+  var gTxt = $('txt');
+  TXT.forEach(function (bloco) {
+    var g = document.createElementNS(NS, 'g'); var y = bloco.y; bloco.el = g; bloco.linhas = [];
+    bloco.l.forEach(function (l, i) {
+      var t = document.createElementNS(NS, 'text');
+      t.setAttribute('x', 90); t.setAttribute('y', y);
+      t.setAttribute('font-size', l[1]); t.setAttribute('fill', l[2]);
+      if (l[3] === 'm') { t.setAttribute('class', 't-mont'); t.setAttribute('letter-spacing', -l[1] * .02); }
+      else if (l[3] === 'k') { t.setAttribute('class', 't-mont'); t.setAttribute('letter-spacing', 5); }
+      else { t.setAttribute('class', 't-serif'); }
+      t.textContent = l[0];
+      g.appendChild(t); bloco.linhas.push(t);
+      y += l[1] * (l[3] === 'm' ? 1.0 : 1.45) + (l[3] === 'k' ? 30 : 0);
+    });
+    gTxt.appendChild(g);
+  });
+  // texto longo: quebrar se necessário
+  function quebra(el, max) {
+    var w = el.getComputedTextLength(); if (w <= max) return;
+    var pal = el.textContent.split(' '), meio = Math.ceil(pal.length / 2);
+    var y = +el.getAttribute('y'), fs = +el.getAttribute('font-size');
+    el.textContent = pal.slice(0, meio).join(' ');
+    var t2 = el.cloneNode(); t2.textContent = pal.slice(meio).join(' '); t2.setAttribute('y', y + fs * 1.3);
+    el.parentNode.insertBefore(t2, el.nextSibling);
+    var seg = t2.nextSibling; while (seg) { seg.setAttribute('y', +seg.getAttribute('y') + fs * 1.3); seg = seg.nextSibling; }
+  }
+
+  /* ---------- Cubo isométrico de fotografias ---------- */
+  var KX = 0.866, KY = 0.524, KZ = 1.08, C = 135, CX = 470, CY = 836;
+  function P(x, y, z) { return [CX + (x - y) * KX * C, CY + (x + y) * KY * C - z * KZ * C - 1.5 * (KY * 2 - KZ) * C * 0]; }
+  // matriz que leva o quadrado unitário à célula: origem o, eixos u, v
+  function cel(o, u, v) { return [u[0] - o[0], u[1] - o[1], v[0] - o[0], v[1] - o[1], o[0], o[1]]; }
+  var celulas = [];
+  // ordem: face de cima (centro primeiro), esquerda, direita
+  var ordemTopo = [[1,1],[0,0],[1,0],[2,0],[0,1],[2,1],[0,2],[1,2],[2,2]];
+  ordemTopo.forEach(function (q) { var i = q[0], j = q[1]; celulas.push({ m: cel(P(i, j, 3), P(i + 1, j, 3), P(i, j + 1, 3)), sombra: 0 }); });
+  for (var k = 0; k < 3; k++) for (var i = 0; i < 3; i++) celulas.push({ m: cel(P(i, 3, 3 - k), P(i + 1, 3, 3 - k), P(i, 3, 2 - k)), sombra: 0.18 });
+  for (k = 0; k < 3; k++) for (var j = 0; j < 3; j++) celulas.push({ m: cel(P(3, 3 - j, 3 - k), P(3, 2 - j, 3 - k), P(3, 3 - j, 2 - k)), sombra: 0.34 });
+
+  // grelha plana inicial (5 × 6), centrada
+  var LADO = 168, ESP = 20, COLS = 5;
+  function plano(n) {
+    var col = n % COLS, lin = Math.floor(n / COLS);
+    var w = COLS * LADO + (COLS - 1) * ESP, x0 = (1080 - w) / 2, y0 = 360;
+    var ult = 27 - 5 * COLS; // última linha centrada
+    if (lin === 5) x0 = (1080 - (ult * LADO + (ult - 1) * ESP)) / 2;
+    return [LADO, 0, 0, LADO, x0 + col * (LADO + ESP), y0 + lin * (LADO + ESP)];
+  }
+
+  var gFotos = $('fotos-g'), tiles = [];
+  function criarTile(src, n) {
+    var g = document.createElementNS(NS, 'g');
+    var inner = document.createElementNS(NS, 'g');
+    inner.setAttribute('transform', 'translate(0.035 0.035) scale(0.93)');
+    var img = document.createElementNS(NS, 'image');
+    img.setAttribute('width', 1); img.setAttribute('height', 1); img.setAttribute('preserveAspectRatio', 'none');
+    img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', src); img.setAttribute('href', src);
+    var som = document.createElementNS(NS, 'rect');
+    som.setAttribute('width', 1); som.setAttribute('height', 1); som.setAttribute('fill', '#03243F'); som.setAttribute('opacity', 0);
+    inner.appendChild(img); inner.appendChild(som); g.appendChild(inner); gFotos.appendChild(g);
+    tiles.push({ g: g, som: som, n: n });
+  }
+
+  // recorte quadrado (mesma lógica de enquadramento do site, incluindo foco/zoom de candidatos.json)
+  function pct(s, eixo) {
+    if (!s) return null; var p = s.trim().split(/\s+/), v = p[eixo] || 'center';
+    return v === 'center' ? 0.5 : v === 'top' || v === 'left' ? 0 : v === 'bottom' || v === 'right' ? 1 : parseFloat(v) / 100;
+  }
+  function quadrado(img, foco, zoom, centro) {
+    var w = img.naturalWidth, h = img.naturalHeight, R = 0.8;           // cartão do site: 4:5
+    var cw, ch; if (w / h > R) { ch = h; cw = h * R; } else { cw = w; ch = w / R; }
+    var fx = pct(foco, 0); if (fx === null) fx = 0.5; var fy = pct(foco, 1); if (fy === null) fy = 0.3;
+    var cx0 = (w - cw) * fx, cy0 = (h - ch) * fy;                        // retângulo do cartão
+    var z = zoom || 1, ox = pct(centro, 0), oy = pct(centro, 1); if (ox === null) ox = 0.5; if (oy === null) oy = 0.35;
+    var vw = cw / z, vh = ch / z, vx = cx0 + ox * cw * (1 - 1 / z), vy = cy0 + oy * ch * (1 - 1 / z); // parte visível
+    var lado = Math.min(vw, vh), sx = vx + (vw - lado) / 2, sy = vy + (vh - lado) * 0.3;
+    var c = document.createElement('canvas'); c.width = c.height = 480;
+    c.getContext('2d').drawImage(img, sx, sy, lado, lado, 0, 0, 480, 480);
+    return c.toDataURL('image/jpeg', 0.9);
+  }
+  function semFoto(nome) {
+    var c = document.createElement('canvas'); c.width = c.height = 480; var x = c.getContext('2d');
+    x.fillStyle = '#F2EEE6'; x.fillRect(0, 0, 480, 480);
+    x.strokeStyle = 'rgba(6,51,92,.08)'; x.lineWidth = 2;
+    for (var i = -480; i < 960; i += 48) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i + 480, 277); x.stroke(); x.beginPath(); x.moveTo(i, 277); x.lineTo(i + 480, 0); x.stroke(); }
+    var p = nome.split(/\s+/); x.fillStyle = 'rgba(6,51,92,.5)'; x.font = '800 150px Montserrat'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillText((p[0][0] + p[p.length - 1][0]).toUpperCase(), 240, 250);
+    return c.toDataURL('image/png');
+  }
+  function carregar(base) {
+    return new Promise(function (res) {
+      var ext = ['jpg', 'jpeg', 'JPG', 'png'], i = 0, img = new Image();
+      img.onload = function () { res(img); };
+      img.onerror = function () { i++; if (i < ext.length) img.src = base + '.' + ext[i]; else res(null); };
+      img.src = base + '.' + ext[0];
+    });
+  }
+
+  var ouroG = $('ouro-final');
+  function cuboOuro() {
+    var s = 0.7, x = 3.6, y = -0.2, z = 3.6, q = function (a) { return a.map(function (v) { var r = P(v[0], v[1], v[2]); return r.join(','); }).join(' '); };
+    ouroG.innerHTML =
+      '<path id="o-traco" d="M' + P(x, y + s, z).join(' ') + ' L' + P(2.6, 0.3, 3).join(' ') + '" fill="none" stroke="#E39A06" stroke-width="4" stroke-dasharray="12 10"/>' +
+      '<g id="o-cubo"><polygon points="' + q([[x,y+s,z],[x+s,y+s,z],[x+s,y+s,z+s],[x,y+s,z+s]]) + '" fill="#B07402"/>' +
+      '<polygon points="' + q([[x+s,y,z],[x+s,y+s,z],[x+s,y+s,z+s],[x+s,y,z+s]]) + '" fill="#CB8B02"/>' +
+      '<polygon points="' + q([[x,y,z+s],[x+s,y,z+s],[x+s,y+s,z+s],[x,y+s,z+s]]) + '" fill="#EBAB04"/></g>';
+  }
+
+  /* ---------- Desenho de cada instante ---------- */
+  function render(t) {
+    // Cena 1: blocos do logótipo encaixam (0–2.4 s)
+    var pe = assenta(fase(t, 0.2, 0.95)), to = assenta(fase(t, 0.45, 1.2)), ba = assenta(fase(t, 0.7, 1.45)), ou = assenta(fase(t, 1.3, 2.3));
+    $('l-pe').setAttribute('transform', 'translate(' + lerp(-260, 0, pe) + ',' + lerp(150, 0, pe) + ')'); $('l-pe').setAttribute('opacity', clamp(pe * 3));
+    $('l-to').setAttribute('transform', 'translate(0,' + lerp(-180, 0, to) + ')'); $('l-to').setAttribute('opacity', clamp(to * 3));
+    $('l-ba').setAttribute('transform', 'translate(' + lerp(260, 0, ba) + ',' + lerp(190, 0, ba) + ')'); $('l-ba').setAttribute('opacity', clamp(ba * 3));
+    // Cena 2: o cubo dourado chega (1.3–2.3 s) e, aos 4.6 s, encaixa na estrutura
+    var enc = assenta(fase(t, 4.6, 5.6));
+    var ox = lerp(260, 0, ou) + lerp(0, -260, enc), oy = lerp(-150, 0, ou) + lerp(0, 145, enc);
+    $('l-ou').setAttribute('transform', 'translate(' + ox + ',' + oy + ')'); $('l-ou').setAttribute('opacity', clamp(ou * 3));
+    $('l-traco').setAttribute('opacity', clamp(fase(t, 1.0, 1.4)) * (1 - clamp(fase(t, 4.9, 5.4))));
+    // o logótipo sai (10.6–11.4 s)
+    var saiLogo = easeInOut(fase(t, 10.6, 11.4));
+    $('logo-g').setAttribute('opacity', 1 - saiLogo);
+    $('logo-g').setAttribute('transform', 'translate(540 650) scale(' + lerp(1, 0.85, saiLogo) + ') translate(-540 -650)');
+
+    // Textos (entrada e saída suaves)
+    TXT.forEach(function (b) {
+      var e = easeOut(fase(t, b.a, b.a + 0.6)), s = easeInOut(fase(t, b.b - 0.5, b.b));
+      b.el.setAttribute('opacity', e * (1 - s));
+      b.el.setAttribute('transform', 'translate(0,' + lerp(30, 0, e) + ')');
+    });
+
+    // Cena 3–4: quadrados de fotografias aparecem (11.4–13.6 s) e fecham em cubo (13.8–16.6 s)
+    tiles.forEach(function (ti) {
+      var n = ti.n, entra = assenta(fase(t, 11.4 + n * 0.06, 11.9 + n * 0.06));
+      var fecha = easeInOut(fase(t, 13.8 + (n % 9) * 0.07 + Math.floor(n / 9) * 0.25, 15.0 + (n % 9) * 0.07 + Math.floor(n / 9) * 0.25));
+      var a = plano(n), b = celulas[n].m, m = a.map(function (v, i) { return lerp(v, b[i], fecha); });
+      // pequena escala na entrada
+      if (fecha === 0) { var k = lerp(0.6, 1, entra), cx = a[4] + LADO / 2, cy = a[5] + LADO / 2; m = [LADO * k, 0, 0, LADO * k, cx - LADO * k / 2, cy - LADO * k / 2]; }
+      ti.g.setAttribute('transform', 'matrix(' + m.join(' ') + ')');
+      ti.g.setAttribute('opacity', clamp(entra * 2));
+      ti.som.setAttribute('opacity', celulas[n].sombra * fecha);
+    });
+    // Cena 5: o cubo dourado volta ao seu lugar ao lado da estrutura (16.4–17.4 s)
+    var of = assenta(fase(t, 16.4, 17.4));
+    ouroG.setAttribute('opacity', clamp(of * 3));
+    var oc = $('o-cubo'); if (oc) oc.setAttribute('transform', 'translate(' + lerp(200, 0, of) + ',' + lerp(-120, 0, of) + ')');
+    var otr = $('o-traco'); if (otr) otr.setAttribute('opacity', clamp(fase(t, 17.2, 17.7)));
+  }
+  window.render = render;
+
+  /* ---------- Arranque ---------- */
+  fetch('../conteudo/candidatos.json').then(function (r) { return r.json(); }).then(function (d) {
+    var pessoas = [];
+    d.orgaos.forEach(function (o) { o.grupos.forEach(function (g) { g.pessoas.forEach(function (p) { pessoas.push(p); }); }); });
+    return Promise.all(pessoas.map(function (p) {
+      return carregar('../fotos/' + p.id + '-atual').then(function (img) {
+        return img ? quadrado(img, p.focoAtual, p.zoomAtual, p.centroZoomAtual) : semFoto(p.nome);
+      });
+    }));
+  }).then(function (srcs) {
+    srcs.slice(0, 27).forEach(function (s, n) { criarTile(s, n); });
+    cuboOuro();
+    return document.fonts.ready;
+  }).then(function () {
+    TXT.forEach(function (b) { b.linhas.forEach(function (l) { if (l.getAttribute('class') === 't-serif') quebra(l, 900); }); });
+    return Promise.all([].map.call(document.querySelectorAll('image'), function (im) {
+      return new Promise(function (r) { var i = new Image(); i.onload = i.onerror = r; i.src = im.getAttribute('href'); });
+    }));
+  }).then(function () {
+    render(0);
+    document.body.setAttribute('data-pronto', '1');
+    if (/play=1/.test(location.search)) { var t0 = performance.now(); (function f() { var t = (performance.now() - t0) / 1000 % DUR; render(t); requestAnimationFrame(f); })(); }
+  });
+})();
+</script>
+</body>
+</html>
