@@ -57,7 +57,7 @@ svg { display: block; }
 </svg>
 <script>
 (function () {
-  var DUR = 22, NS = 'http://www.w3.org/2000/svg';
+  var DUR = 26, NS = 'http://www.w3.org/2000/svg';
   window.DURACAO = DUR;
   var $ = function (id) { return document.getElementById(id); };
   var clamp = function (v) { return Math.max(0, Math.min(1, v)); };
@@ -73,21 +73,23 @@ svg { display: block; }
     { a: 2.1, b: 5.4, y: 1210, l: [['Obrigado.', 150, '#055695', 'm'], ['A todos os que votaram.', 54, '#06335C', 's']] },
     { a: 5.7, b: 7.7, y: 1180, l: [['A peça', 112, '#055695', 'm'], ['que faltava', 112, '#129AA5', 'm'], ['eram vocês.', 112, '#B07402', 'm']] },
     { a: 8.0, b: 11.0, y: 1180, l: [['Estamos', 112, '#055695', 'm'], ['preparados', 112, '#129AA5', 'm'], ['para construir o futuro.', 54, '#06335C', 's']] },
-    { a: 16.8, b: 22.5, y: 1390, l: [['Mandato 2027–2029', 32, '#0B7880', 'k'], ['Começamos', 92, '#055695', 'm'], ['a construir.', 92, '#129AA5', 'm'], ['Os próximos três anos constroem-se com cada sócio.', 40, '#06335C', 's'], ['Obrigado pela confiança.', 40, '#B07402', 's']] }
+    { a: 16.8, b: 21.3, y: 1390, l: [['Mandato 2027–2029', 32, '#0B7880', 'k'], ['Começamos', 92, '#055695', 'm'], ['a construir.', 92, '#129AA5', 'm'], ['Os próximos três anos constroem-se com cada sócio.', 40, '#06335C', 's'], ['Obrigado pela confiança.', 40, '#B07402', 's']] },
+    { a: 24.0, b: 99, y: 1170, centro: true, l: [['Construir o', 104, '#055695', 'm'], ['Futuro', 104, '#129AA5', 'm'], ['Mandato 2027–2029', 30, '#0B7880', 'k']] }
   ];
   var gTxt = $('txt');
   TXT.forEach(function (bloco) {
     var g = document.createElementNS(NS, 'g'); var y = bloco.y; bloco.el = g; bloco.linhas = [];
     bloco.l.forEach(function (l, i) {
       var t = document.createElementNS(NS, 'text');
-      t.setAttribute('x', 90); t.setAttribute('y', y);
+      t.setAttribute('x', bloco.centro ? 540 : 90); t.setAttribute('y', y);
+      if (bloco.centro) t.setAttribute('text-anchor', 'middle');
       t.setAttribute('font-size', l[1]); t.setAttribute('fill', l[2]);
       if (l[3] === 'm') { t.setAttribute('class', 't-mont'); t.setAttribute('letter-spacing', -l[1] * .02); }
       else if (l[3] === 'k') { t.setAttribute('class', 't-mont'); t.setAttribute('letter-spacing', 5); }
       else { t.setAttribute('class', 't-serif'); }
       t.textContent = l[0];
       g.appendChild(t); bloco.linhas.push(t);
-      y += l[1] * (l[3] === 'm' ? 1.0 : 1.45) + (l[3] === 'k' ? 30 : 0);
+      y += l[1] * (l[3] === 'm' ? 1.0 : 1.45) + (l[3] === 'k' ? 30 : 0) + (bloco.centro && l[3] === 'm' ? 14 : 0);
     });
     gTxt.appendChild(g);
   });
@@ -219,19 +221,20 @@ svg { display: block; }
   /* ---------- Desenho de cada instante ---------- */
   function render(t) {
     // Cena 1: blocos do logótipo encaixam (0–2.4 s)
-    var pe = assenta(fase(t, 0.2, 0.95)), to = assenta(fase(t, 0.45, 1.2)), ba = assenta(fase(t, 0.7, 1.45)), ou = assenta(fase(t, 1.3, 2.3));
+    var regresso = t >= 21.9, tl = regresso ? t - 21.9 : t;
+    var pe = assenta(fase(tl, 0.2, 0.95)), to = assenta(fase(tl, 0.45, 1.2)), ba = assenta(fase(tl, 0.7, 1.45)), ou = assenta(fase(tl, 1.3, 2.3));
     $('l-pe').setAttribute('transform', 'translate(' + lerp(-260, 0, pe) + ',' + lerp(150, 0, pe) + ')'); $('l-pe').setAttribute('opacity', clamp(pe * 3));
     $('l-to').setAttribute('transform', 'translate(0,' + lerp(-180, 0, to) + ')'); $('l-to').setAttribute('opacity', clamp(to * 3));
     $('l-ba').setAttribute('transform', 'translate(' + lerp(260, 0, ba) + ',' + lerp(190, 0, ba) + ')'); $('l-ba').setAttribute('opacity', clamp(ba * 3));
     // Cena 2: o cubo dourado chega ao seu lugar (1.3–2.3 s) e fica
     $('l-ou').setAttribute('transform', 'translate(' + lerp(260, 0, ou) + ',' + lerp(-150, 0, ou) + ')');
-    $('l-ou').setAttribute('opacity', t < 5 ? clamp(ou * 3) : 0);
-    $('l-traco').setAttribute('opacity', clamp(fase(t, 1.0, 1.4)) * (1 - clamp(fase(t, 5.0, 5.5))));
-    var saiLogo = easeInOut(fase(t, 5.0, 6.0));
+    $('l-ou').setAttribute('opacity', (t < 5 || regresso) ? clamp(ou * 3) : 0);
+    $('l-traco').setAttribute('opacity', regresso ? clamp(fase(tl, 1.0, 1.4)) : clamp(fase(t, 1.0, 1.4)) * (1 - clamp(fase(t, 5.0, 5.5))));
+    var saiLogo = regresso ? 0 : easeInOut(fase(t, 5.0, 6.0));
     ['l-pe', 'l-to', 'l-ba'].forEach(function (id) { $(id).setAttribute('opacity', (+$(id).getAttribute('opacity')) * (1 - saiLogo)); });
 
     // Cubo dourado a rodar (a partir dos 5 s)
-    if (t >= 5) {
+    if (t >= 5 && t < 21) {
       var tt = t - 5, ang = tt < 1.2 ? 0.667 * tt * tt : 0.96 + 1.6 * (tt - 1.2);
       var vaiCentro = easeInOut(fase(t, 5.2, 6.6));
       var x = lerp(OURO0.x, 540, vaiCentro), y = lerp(OURO0.y, 640, vaiCentro), l = lerp(OURO0.l, 190, vaiCentro);
@@ -243,7 +246,7 @@ svg { display: block; }
     } else giro.innerHTML = '';
 
     // Linha dourada que percorre as arestas (15.8–17.6 s)
-    var linha = easeInOut(fase(t, 15.8, 17.6));
+    var linha = easeInOut(fase(t, 15.8, 17.6)) * (1 - easeInOut(fase(t, 20.9, 21.6)));
     aresta.setAttribute('stroke-dashoffset', LEN * (1 - linha));
     aresta.setAttribute('opacity', t > 15.75 ? 1 : 0);
 
@@ -261,8 +264,12 @@ svg { display: block; }
       var a = plano(n), b = celulas[n].m, m = a.map(function (v, i) { return lerp(v, b[i], fecha); });
       // pequena escala na entrada
       if (fecha === 0) { var k = lerp(0.6, 1, entra), cx = a[4] + LADO / 2, cy = a[5] + LADO / 2; m = [LADO * k, 0, 0, LADO * k, cx - LADO * k / 2, cy - LADO * k / 2]; }
+      // 21.0–22.3 s: cada quadrado encolhe e desaparece
+      var sai = easeInOut(fase(t, 21.0 + n * 0.03, 21.5 + n * 0.03));
+      if (sai > 0) { var cxm = m[4] + (m[0] + m[2]) / 2, cym = m[5] + (m[1] + m[3]) / 2, k2 = 1 - sai;
+        m = [m[0] * k2, m[1] * k2, m[2] * k2, m[3] * k2, cxm - (m[0] + m[2]) / 2 * k2, cym - (m[1] + m[3]) / 2 * k2]; }
       ti.g.setAttribute('transform', 'matrix(' + m.join(' ') + ')');
-      ti.g.setAttribute('opacity', clamp(entra * 2));
+      ti.g.setAttribute('opacity', clamp(entra * 2) * (1 - sai));
       ti.som.setAttribute('opacity', celulas[n].sombra * fecha);
     });
   }
