@@ -43,7 +43,8 @@ svg { display: block; }
 
   <!-- Cubo de fotografias (cena 4–5) -->
   <g id="fotos-g"></g>
-  <g id="ouro-final"></g>
+  <path id="arestas" fill="none" stroke="#EBAB04" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <g id="giro"></g>
 
   <!-- Textos -->
   <g id="txt"></g>
@@ -69,11 +70,10 @@ svg { display: block; }
 
   /* ---------- Textos ---------- */
   var TXT = [
-    // [início, fim, y, linhas[[texto, tamanho, cor, família]]]
-    { a: 2.1, b: 7.6, y: 1210, l: [['Obrigado.', 150, '#055695', 'm'], ['A todos os que votaram.', 54, '#06335C', 's']] },
-    { a: 5.0, b: 7.6, y: 1470, l: [['A peça que faltava eram vocês.', 46, '#B07402', 's']] },
-    { a: 8.0, b: 11.4, y: 1180, l: [['Estamos', 112, '#055695', 'm'], ['preparados', 112, '#129AA5', 'm'], ['para construir o futuro.', 54, '#06335C', 's']] },
-    { a: 16.6, b: 22.5, y: 1390, l: [['Mandato 2027–2029', 32, '#0B7880', 'k'], ['Começamos', 92, '#055695', 'm'], ['a construir.', 92, '#129AA5', 'm'], ['Os próximos três anos constroem-se com cada sócio.', 40, '#06335C', 's'], ['Obrigado pela confiança.', 40, '#B07402', 's']] }
+    { a: 2.1, b: 5.4, y: 1210, l: [['Obrigado.', 150, '#055695', 'm'], ['A todos os que votaram.', 54, '#06335C', 's']] },
+    { a: 5.7, b: 7.7, y: 1180, l: [['A peça', 112, '#055695', 'm'], ['que faltava', 112, '#129AA5', 'm'], ['eram vocês.', 112, '#B07402', 'm']] },
+    { a: 8.0, b: 11.0, y: 1180, l: [['Estamos', 112, '#055695', 'm'], ['preparados', 112, '#129AA5', 'm'], ['para construir o futuro.', 54, '#06335C', 's']] },
+    { a: 16.8, b: 22.5, y: 1390, l: [['Mandato 2027–2029', 32, '#0B7880', 'k'], ['Começamos', 92, '#055695', 'm'], ['a construir.', 92, '#129AA5', 'm'], ['Os próximos três anos constroem-se com cada sócio.', 40, '#06335C', 's'], ['Obrigado pela confiança.', 40, '#B07402', 's']] }
   ];
   var gTxt = $('txt');
   TXT.forEach(function (bloco) {
@@ -118,7 +118,7 @@ svg { display: block; }
   var LADO = 168, ESP = 20, COLS = 5;
   function plano(n) {
     var col = n % COLS, lin = Math.floor(n / COLS);
-    var w = COLS * LADO + (COLS - 1) * ESP, x0 = (1080 - w) / 2, y0 = 360;
+    var w = COLS * LADO + (COLS - 1) * ESP, x0 = (1080 - w) / 2, y0 = 470;
     var ult = 27 - 5 * COLS; // última linha centrada
     if (lin === 5) x0 = (1080 - (ult * LADO + (ult - 1) * ESP)) / 2;
     return [LADO, 0, 0, LADO, x0 + col * (LADO + ESP), y0 + lin * (LADO + ESP)];
@@ -173,14 +173,47 @@ svg { display: block; }
     });
   }
 
-  var ouroG = $('ouro-final');
-  function cuboOuro() {
-    var s = 0.7, x = 3.6, y = -0.2, z = 3.6, q = function (a) { return a.map(function (v) { var r = P(v[0], v[1], v[2]); return r.join(','); }).join(' '); };
-    ouroG.innerHTML =
-      '<path id="o-traco" d="M' + P(x, y + s, z).join(' ') + ' L' + P(2.6, 0.3, 3).join(' ') + '" fill="none" stroke="#E39A06" stroke-width="4" stroke-dasharray="12 10"/>' +
-      '<g id="o-cubo"><polygon points="' + q([[x,y+s,z],[x+s,y+s,z],[x+s,y+s,z+s],[x,y+s,z+s]]) + '" fill="#B07402"/>' +
-      '<polygon points="' + q([[x+s,y,z],[x+s,y+s,z],[x+s,y+s,z+s],[x+s,y,z+s]]) + '" fill="#CB8B02"/>' +
-      '<polygon points="' + q([[x,y,z+s],[x+s,y,z+s],[x+s,y+s,z+s],[x,y+s,z+s]]) + '" fill="#EBAB04"/></g>';
+  /* ---------- Cubo dourado em rotação (3D real, projeção isométrica) ---------- */
+  var giro = $('giro');
+  var FACES = [
+    [[[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]], [0,0,1]],
+    [[[1,-1,-1],[1,1,-1],[1,1,1],[1,-1,1]], [1,0,0]],
+    [[[-1,1,-1],[-1,-1,-1],[-1,-1,1],[-1,1,1]], [-1,0,0]],
+    [[[1,1,-1],[-1,1,-1],[-1,1,1],[1,1,1]], [0,1,0]],
+    [[[-1,-1,-1],[1,-1,-1],[1,-1,1],[-1,-1,1]], [0,-1,0]]
+  ];
+  function mistura(a, b, k) {
+    var pa = [1,3,5].map(function (i) { return parseInt(a.substr(i, 2), 16); }), pb = [1,3,5].map(function (i) { return parseInt(b.substr(i, 2), 16); });
+    return 'rgb(' + pa.map(function (v, i) { return Math.round(lerp(v, pb[i], k)); }).join(',') + ')';
+  }
+  function desenhaGiro(cx, cy, lado, th) {
+    if (lado <= 0.5) { giro.innerHTML = ''; return; }
+    var c = Math.cos(th), sn = Math.sin(th), h = lado / 2, out = '', faces = [];
+    var proj = function (v) { var x = v[0] * c - v[1] * sn, y = v[0] * sn + v[1] * c, z = v[2];
+      return [cx + (x - y) * KX * h, cy + (x + y) * KY * h - z * KZ * h]; };
+    FACES.forEach(function (f) {
+      var pts = f[0].map(proj), area = 0;
+      for (var i = 0; i < 4; i++) { var a = pts[i], b = pts[(i + 1) % 4]; area += a[0] * b[1] - b[0] * a[1]; }
+      var cor;
+      if (f[1][2] === 1) cor = '#EBAB04';
+      else { var nx = f[1][0] * c - f[1][1] * sn, ny = f[1][0] * sn + f[1][1] * c;
+        cor = mistura('#A06602', '#D69A0E', clamp((nx - ny + 1.4) / 2.8)); }
+      faces.push({ area: area, pts: pts, cor: cor });
+    });
+    // desenhar só as faces viradas para quem vê (todas têm o mesmo sinal de área)
+    var sinal = faces[0].area < 0 ? -1 : 1;
+    faces.forEach(function (f) { if (f.area * sinal > 0) out += '<polygon points="' + f.pts.map(function (q) { return q[0].toFixed(1) + ',' + q[1].toFixed(1); }).join(' ') + '" fill="' + f.cor + '"/>'; });
+    giro.innerHTML = out;
+  }
+  var OURO0 = { x: 762, y: 538, l: 127 };
+
+  var aresta = $('arestas'), LEN = 0;
+  function preparaArestas() {
+    var q = function (a) { var r = P(a[0], a[1], a[2]); return r[0].toFixed(1) + ' ' + r[1].toFixed(1); };
+    aresta.setAttribute('d', 'M' + q([0,0,3]) + ' L' + q([3,0,3]) + ' L' + q([3,0,0]) + ' L' + q([3,3,0]) + ' L' + q([0,3,0]) + ' L' + q([0,3,3]) + ' Z' +
+      ' M' + q([3,3,3]) + ' L' + q([3,0,3]) + ' M' + q([3,3,3]) + ' L' + q([0,3,3]) + ' M' + q([3,3,3]) + ' L' + q([3,3,0]));
+    LEN = aresta.getTotalLength();
+    aresta.setAttribute('stroke-dasharray', LEN + ' ' + LEN);
   }
 
   /* ---------- Desenho de cada instante ---------- */
@@ -190,15 +223,29 @@ svg { display: block; }
     $('l-pe').setAttribute('transform', 'translate(' + lerp(-260, 0, pe) + ',' + lerp(150, 0, pe) + ')'); $('l-pe').setAttribute('opacity', clamp(pe * 3));
     $('l-to').setAttribute('transform', 'translate(0,' + lerp(-180, 0, to) + ')'); $('l-to').setAttribute('opacity', clamp(to * 3));
     $('l-ba').setAttribute('transform', 'translate(' + lerp(260, 0, ba) + ',' + lerp(190, 0, ba) + ')'); $('l-ba').setAttribute('opacity', clamp(ba * 3));
-    // Cena 2: o cubo dourado chega (1.3–2.3 s) e, aos 4.6 s, encaixa na estrutura
-    var enc = assenta(fase(t, 4.6, 5.6));
-    var ox = lerp(260, 0, ou) + lerp(0, -260, enc), oy = lerp(-150, 0, ou) + lerp(0, 145, enc);
-    $('l-ou').setAttribute('transform', 'translate(' + ox + ',' + oy + ')'); $('l-ou').setAttribute('opacity', clamp(ou * 3));
-    $('l-traco').setAttribute('opacity', clamp(fase(t, 1.0, 1.4)) * (1 - clamp(fase(t, 4.9, 5.4))));
-    // o logótipo sai (10.6–11.4 s)
-    var saiLogo = easeInOut(fase(t, 10.6, 11.4));
-    $('logo-g').setAttribute('opacity', 1 - saiLogo);
-    $('logo-g').setAttribute('transform', 'translate(540 650) scale(' + lerp(1, 0.85, saiLogo) + ') translate(-540 -650)');
+    // Cena 2: o cubo dourado chega ao seu lugar (1.3–2.3 s) e fica
+    $('l-ou').setAttribute('transform', 'translate(' + lerp(260, 0, ou) + ',' + lerp(-150, 0, ou) + ')');
+    $('l-ou').setAttribute('opacity', t < 5 ? clamp(ou * 3) : 0);
+    $('l-traco').setAttribute('opacity', clamp(fase(t, 1.0, 1.4)) * (1 - clamp(fase(t, 5.0, 5.5))));
+    var saiLogo = easeInOut(fase(t, 5.0, 6.0));
+    ['l-pe', 'l-to', 'l-ba'].forEach(function (id) { $(id).setAttribute('opacity', (+$(id).getAttribute('opacity')) * (1 - saiLogo)); });
+
+    // Cubo dourado a rodar (a partir dos 5 s)
+    if (t >= 5) {
+      var tt = t - 5, ang = tt < 1.2 ? 0.667 * tt * tt : 0.96 + 1.6 * (tt - 1.2);
+      var vaiCentro = easeInOut(fase(t, 5.2, 6.6));
+      var x = lerp(OURO0.x, 540, vaiCentro), y = lerp(OURO0.y, 640, vaiCentro), l = lerp(OURO0.l, 190, vaiCentro);
+      var canto = easeInOut(fase(t, 10.8, 11.6));
+      x = lerp(x, 930, canto); y = lerp(y, 360, canto); l = lerp(l, 70, canto);
+      var desfaz = easeInOut(fase(t, 15.2, 15.9)), v0 = P(0, 0, 3);
+      x = lerp(x, v0[0], desfaz); y = lerp(y, v0[1], desfaz); l = lerp(l, 0, desfaz);
+      desenhaGiro(x, y, l, ang);
+    } else giro.innerHTML = '';
+
+    // Linha dourada que percorre as arestas (15.8–17.6 s)
+    var linha = easeInOut(fase(t, 15.8, 17.6));
+    aresta.setAttribute('stroke-dashoffset', LEN * (1 - linha));
+    aresta.setAttribute('opacity', t > 15.75 ? 1 : 0);
 
     // Textos (entrada e saída suaves)
     TXT.forEach(function (b) {
@@ -218,11 +265,6 @@ svg { display: block; }
       ti.g.setAttribute('opacity', clamp(entra * 2));
       ti.som.setAttribute('opacity', celulas[n].sombra * fecha);
     });
-    // Cena 5: o cubo dourado volta ao seu lugar ao lado da estrutura (16.4–17.4 s)
-    var of = assenta(fase(t, 16.4, 17.4));
-    ouroG.setAttribute('opacity', clamp(of * 3));
-    var oc = $('o-cubo'); if (oc) oc.setAttribute('transform', 'translate(' + lerp(200, 0, of) + ',' + lerp(-120, 0, of) + ')');
-    var otr = $('o-traco'); if (otr) otr.setAttribute('opacity', clamp(fase(t, 17.2, 17.7)));
   }
   window.render = render;
 
@@ -237,7 +279,7 @@ svg { display: block; }
     }));
   }).then(function (srcs) {
     srcs.slice(0, 27).forEach(function (s, n) { criarTile(s, n); });
-    cuboOuro();
+    preparaArestas();
     return document.fonts.ready;
   }).then(function () {
     TXT.forEach(function (b) { b.linhas.forEach(function (l) { if (l.getAttribute('class') === 't-serif') quebra(l, 900); }); });
