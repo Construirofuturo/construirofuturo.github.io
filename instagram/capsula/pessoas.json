@@ -1,0 +1,17 @@
+{
+  "_instrucoes": "Uma entrada por pessoa. id = o mesmo de conteudo/candidatos.json (daí vêm nome, cargo e órgão; as fotografias vêm de fotos/ID-crianca.* e fotos/ID-atual.*). desejo: até 16 palavras. objetos: 2 ou 3, cada um com 'nome' (uma palavra) e 'icone' (ver lista em capsula.html, ICONES). focoCrianca / focoAtual (opcional): ponto focal da fotografia, horizontal e vertical, ex. 'center 20%'.",
+  "fraseAbertura": "Já estávamos a construir o futuro.",
+  "pessoas": [
+    {
+      "id": "rui-diogo-rodrigues",
+      "desejo": "Os MGF terem tempo destinado a estarem presentes em atividades da sua comunidade.",
+      "objetos": [
+        { "nome": "Kobo", "icone": "leitor" },
+        { "nome": "Cadeiras", "icone": "cadeiras" },
+        { "nome": "Botas", "icone": "botas" }
+      ],
+      "focoCrianca": "center 18%",
+      "focoAtual": "center 22%"
+    }
+  ]
+}

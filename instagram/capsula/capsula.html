@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>Cápsula do tempo · Construir o Futuro</title>
+<!--
+  Vídeo-cápsula 9:16 (1080 × 1920), 18 s. Uma pessoa por vídeo.
+    capsula.html?id=rui-diogo-rodrigues          → fotograma 0 (pronto para render(t))
+    capsula.html?id=rui-diogo-rodrigues&play=1   → reprodução em tempo real (gravação de ecrã)
+  Dados: pessoas.json (desejo, objetos, focos) + ../../conteudo/candidatos.json (nome, cargo, órgão).
+  Fotografias: ../../fotos/ID-crianca.* e ../../fotos/ID-atual.*
+  A animação é determinística: window.render(t) desenha o instante t (s). O gerador (gerar.js) usa-a.
+-->
+<style>
+@font-face { font-family: 'Montserrat'; src: url('../../fonts/montserrat.woff2') format('woff2'); font-weight: 600 800; }
+:root { --navy: #01243F; --azul: #055695; --petroleo: #02ADB6; --ouro: #EBAB03; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--navy); }
+body { font-family: 'Montserrat', sans-serif; font-weight: 700; color: #fff; }
+#palco { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: var(--navy); }
+#particulas { position: absolute; inset: 0; }
+#halo { position: absolute; left: 540px; top: 860px; width: 1100px; height: 1100px; margin: -550px 0 0 -550px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(235,171,3,.42) 0%, rgba(235,171,3,.16) 32%, rgba(235,171,3,0) 64%); pointer-events: none; }
+
+/* câmara e emblema */
+#cam { position: absolute; inset: 0; transform-origin: 540px 860px; }
+#emb { position: absolute; left: 540px; top: 860px; width: 0; height: 0; z-index: 3; }
+#persp { position: absolute; left: 0; top: 0; perspective: 2400px; perspective-origin: 0 0; }
+#rot { position: absolute; left: 0; top: 0; transform-style: preserve-3d; }
+.metade { position: absolute; left: 0; top: 0; transform-style: preserve-3d; }
+.camada { position: absolute; left: -370px; top: -370px; width: 740px; height: 740px; backface-visibility: hidden; }
+
+/* painéis de fotografia (fora do grupo que roda) */
+.painel { position: absolute; left: 540px; top: 860px; width: 520px; height: 650px; margin: -325px 0 0 -260px;
+  border: 3px solid var(--ouro); background: #000; overflow: hidden; opacity: 0; z-index: 5; }
+.painel img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.painel::after { content: ''; position: absolute; inset: 0; box-shadow: inset 0 0 140px rgba(1,36,63,.55); }
+
+/* textos */
+.bloco { position: absolute; left: 90px; right: 90px; text-align: center; opacity: 0; z-index: 8; }
+.ante { color: var(--ouro); font-weight: 700; font-size: 27px; letter-spacing: .32em; text-transform: uppercase; }
+.frase { font-weight: 700; font-size: 60px; line-height: 1.18; margin-top: 22px; }
+.nome { font-weight: 800; font-size: 88px; line-height: 1; letter-spacing: -.01em; margin-top: 22px; }
+.desejo { font-weight: 700; font-size: 58px; line-height: 1.22; margin-top: 28px; }
+#objetos { display: flex; justify-content: center; gap: 70px; margin-top: 46px; }
+.obj { width: 170px; display: flex; flex-direction: column; align-items: center; gap: 18px; opacity: 0; }
+.obj svg { width: 150px; height: 150px; overflow: visible; }
+.obj span { font-weight: 700; font-size: 28px; letter-spacing: .14em; text-transform: uppercase; }
+
+/* fecho */
+#lockup { position: absolute; left: 0; right: 0; top: 1205px; text-align: center; opacity: 0; z-index: 8;
+  font-weight: 800; font-size: 104px; line-height: 1.02; letter-spacing: -.01em; text-transform: uppercase; }
+#lockup .a { color: var(--azul); } #lockup .b { color: var(--petroleo); }
+</style>
+</head>
+<body>
+<div id="palco">
+  <canvas id="particulas" width="1080" height="1920"></canvas>
+  <div id="halo"></div>
+  <div id="cam">
+    <div id="emb"><div id="persp"><div id="rot">
+      <div class="metade esq" id="esq"></div>
+      <div class="metade dir" id="dir"></div>
+    </div></div></div>
+    <div class="painel" id="p-crianca"><img alt=""></div>
+    <div class="painel" id="p-atual"><img alt=""></div>
+  </div>
+
+  <div class="bloco" id="t-abertura" style="top:1290px"><div class="ante">Cápsula do tempo</div><div class="frase" id="frase"></div></div>
+  <div class="bloco" id="t-nome" style="top:1300px"><div class="ante" id="papel"></div><div class="nome" id="nome"></div></div>
+  <div class="bloco" id="t-desejo" style="top:430px"><div class="ante">Desejo para o futuro</div><div class="desejo" id="desejo"></div></div>
+  <div class="bloco" id="t-objetos" style="top:1120px"><div class="ante">Objetos que levo para o futuro</div><div id="objetos"></div></div>
+  <div id="lockup"><div class="a">Construir o</div><div class="b">Futuro</div></div>
+</div>
+
+<svg width="0" height="0" style="position:absolute">
+  <filter id="varrimento" x="-40%" y="-10%" width="180%" height="120%"><feGaussianBlur id="vg" stdDeviation="0 0"/></filter>
+</svg>
+
+<script>
+(function () {
+  var DUR = 18; window.DURACAO = DUR;
+  var $ = function (id) { return document.getElementById(id); };
+  var clamp = function (v, a, b) { return Math.max(a === undefined ? 0 : a, Math.min(b === undefined ? 1 : b, v)); };
+  var fase = function (t, a, b) { return clamp((t - a) / (b - a)); };
+  var easeOut = function (x) { return 1 - Math.pow(1 - x, 3); };
+  var lerp = function (a, b, k) { return a + (b - a) * k; };
+
+  // Interpolação linear por pontos-chave: a aceleração vem da densidade dos pontos, sem curvas por segmento.
+  function kf(pontos, t) {
+    if (t <= pontos[0][0]) return pontos[0][1];
+    for (var i = 1; i < pontos.length; i++) {
+      if (t <= pontos[i][0]) { var a = pontos[i - 1], b = pontos[i]; return a[1] + (b[1] - a[1]) * (t - a[0]) / (b[0] - a[0]); }
+    }
+    return pontos[pontos.length - 1][1];
+  }
+
+  /* ---------- ROTAÇÃO acumulada (graus), nunca recua: 0 → 1800 ----------
+     Leitura de frente em múltiplos de 180° (o verso mostra o emblema já corrigido).
+     Os 90° + k·180° (bloco de perfil) são sempre atravessados em segmentos rápidos (≥ 480°/s). */
+  var ROT = [
+    [0, 0], [1.0, 10], [2.0, 18], [3.5, 28], [3.9, 34], [4.25, 52],          // deriva; fecho a acelerar
+    [4.33, 100], [4.6, 300], [4.85, 470], [5.15, 540], [5.3, 556],            // giro 1 (~1,5 voltas)
+    [6.3, 562], [8.9, 576], [9.1, 588], [9.3, 610],                          // deriva; fecho a acelerar
+    [9.42, 700], [9.7, 880], [9.9, 1020], [10.25, 1076], [10.4, 1084],      // giro 2
+    [11.6, 1090], [14.6, 1098], [15.0, 1100], [15.9, 1112],                  // deriva lenta (metades fora)
+    [16.0, 1140], [16.09, 1200], [16.4, 1440], [16.7, 1650], [16.86, 1760],    // rotação final até ao emblema
+    [17.1, 1792], [18.0, 1800]
+  ];
+  // Separação das metades (px, em cada lado)
+  var SEP = [
+    [0, 0], [1.0, 0], [1.35, 110], [2.0, 250], [3.5, 250], [3.9, 175], [4.15, 40], [4.25, 0],
+    [5.3, 0], [5.65, 110], [6.3, 250], [8.9, 250], [9.1, 135], [9.3, 0],
+    [10.5, 0], [10.85, 180], [11.2, 520], [11.6, 1150],
+    [15.0, 1150], [15.4, 460], [15.7, 110], [15.9, 0], [18, 0]
+  ];
+  var EVENTOS = [1.0, 4.25, 5.3, 9.3, 10.5, 15.9]; // aberturas e fechos → pulso do halo
+
+  /* ---------- Emblema com volume: 11 cópias em profundidade por face ---------- */
+  var N = 11, PROF = 34; // px de espessura total
+  function constroiMetade(el, lado) {
+    for (var face = 0; face < 2; face++) {          // 0 = frente, 1 = verso (rodado 180°, lê-se corretamente por trás)
+      for (var i = 0; i < N; i++) {
+        var img = document.createElement('img');
+        img.className = 'camada'; img.src = '../../img/logotipo.svg'; img.alt = '';
+        // no verso a imagem está rodada 180°: para ficar do mesmo lado, mostra a outra metade
+        var mostraEsq = (lado === 'esq') !== (face === 1);
+        img.style.clipPath = mostraEsq ? 'inset(0 50% 0 0)' : 'inset(0 0 0 50%)';
+        var z = PROF / 2 - i * PROF / (N - 1);                       // frente → trás
+        var brilho = 1 - 0.58 * i / (N - 1);                         // o brilho cai para trás
+        if (face === 0) img.style.transform = 'translateZ(' + z + 'px)';
+        else img.style.transform = 'translateZ(' + (-z) + 'px) rotateY(180deg)';
+        img.style.filter = 'brightness(' + brilho.toFixed(3) + ')';
+        img.style.zIndex = N - i;
+        el.appendChild(img);
+      }
+    }
+  }
+  constroiMetade($('esq'), 'esq'); constroiMetade($('dir'), 'dir');
+
+  /* ---------- Partículas douradas em deriva ---------- */
+  var cv = $('particulas'), cx = cv.getContext('2d'), PART = [];
+  var semente = 7; function aleat() { semente = (semente * 16807) % 2147483647; return (semente - 1) / 2147483646; }
+  for (var i = 0; i < 70; i++) PART.push({ x: aleat() * 1080, y: aleat() * 1920, r: 1.2 + aleat() * 2.6, v: 14 + aleat() * 36, f: aleat() * 6.28, a: 0.25 + aleat() * 0.55 });
+  function particulas(t, op) {
+    cx.clearRect(0, 0, 1080, 1920);
+    if (op <= 0) return;
+    PART.forEach(function (p) {
+      var y = ((p.y - t * p.v) % 1920 + 1920) % 1920, x = p.x + Math.sin(t * 0.6 + p.f) * 22;
+      var al = p.a * (0.6 + 0.4 * Math.sin(t * 2.2 + p.f * 3)) * op;
+      cx.beginPath(); cx.arc(x, y, p.r, 0, 6.2832); cx.fillStyle = 'rgba(235,171,3,' + al.toFixed(3) + ')'; cx.fill();
+    });
+  }
+
+  /* ---------- Ícones (traço 2,6 numa grelha de 48, dourado, mesmo sistema) ---------- */
+  var ICONES = {
+    leitor:   '<rect x="12" y="5" width="24" height="38" rx="3"/><rect x="16" y="10" width="16" height="23" rx="1"/><path d="M19 15h10M19 19.5h10M19 24h10M19 28.5h6"/><path d="M21 38h6"/>',
+    cadeiras: '<path d="M8 8v32M8 26h11v14M19 26v-3"/><path d="M40 8v32M40 26H29v14M29 26v-3"/><path d="M8 16h5M40 16h-5"/><path d="M20.5 13.5h7M22.5 18.5h3"/>',
+    botas:    '<path d="M15 6h11v19l11 5.5c3.2 1.6 5 3.6 5 6.5v3H11v-6c0-2.6 1.6-4.6 4-5.6z"/><path d="M11 40h31M11 44h31"/><path d="M19 11h7M19 16h7M19 21h7"/>',
+    livro:    '<path d="M24 11c-4-3-10-4-16-3v29c6-1 12 0 16 3 4-3 10-4 16-3V8c-6-1-12 0-16 3z"/><path d="M24 11v29"/>',
+    estetoscopio: '<path d="M13 6v12a9 9 0 0 0 18 0V6"/><path d="M22 27v5a8 8 0 0 0 16 0v-5"/><circle cx="38" cy="23" r="4"/><path d="M10 6h6M28 6h6"/>',
+    cafe:     '<path d="M9 18h24v10a10 10 0 0 1-10 10h-4A10 10 0 0 1 9 28z"/><path d="M33 21h3a5 5 0 0 1 0 10h-3"/><path d="M16 6c-2 3 2 5 0 8M24 6c-2 3 2 5 0 8"/><path d="M7 43h30"/>',
+    mochila:  '<rect x="10" y="12" width="28" height="31" rx="6"/><path d="M18 12V8a6 6 0 0 1 12 0v4"/><path d="M16 27h16v9H16z"/>',
+    planta:   '<path d="M14 30h20l-3 13H17z"/><path d="M24 30V17"/><path d="M24 21c-7 0-11-5-11-11 7 0 11 5 11 11zM24 17c0-6 4-10 11-10 0 6-4 10-11 10z"/>',
+    camara:   '<rect x="6" y="14" width="36" height="26" rx="3"/><circle cx="24" cy="27" r="7.5"/><path d="M17 14l3-6h8l3 6"/>',
+    musica:   '<path d="M18 36V10l20-4v26"/><circle cx="13" cy="36" r="5"/><circle cx="33" cy="32" r="5"/>',
+    bicicleta:'<circle cx="11" cy="32" r="8"/><circle cx="37" cy="32" r="8"/><path d="M11 32l8-15h12l6 15M19 17l7 15h-15M29 11h5"/>',
+    caneta:   '<path d="M33 6l9 9-23 23-11 2 2-11z"/><path d="M29 10l9 9"/>',
+    coracao:  '<path d="M24 41S7 30 7 18a8.5 8.5 0 0 1 17-2 8.5 8.5 0 0 1 17 2c0 12-17 23-17 23z"/>',
+    cubo:     '<path d="M24 5l17 10v18L24 43 7 33V15z"/><path d="M7 15l17 10 17-10M24 25v18"/>'
+  };
+  function icone(nome) {
+    return '<svg viewBox="0 0 48 48" fill="none" stroke="#EBAB03" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">' + (ICONES[nome] || ICONES.cubo) + '</svg>';
+  }
+
+  /* ---------- Painéis ---------- */
+  function painel(el, t, ent, sai, fimSai) {
+    var e = easeOut(fase(t, ent, ent + 1.0)), x = fase(t, sai, fimSai);
+    if (t < ent || t > fimSai) { el.style.opacity = 0; return; }
+    var sc = lerp(0.3, 1, e) * lerp(1, 0.5, x), rot = lerp(-32, 0, e), ty = lerp(420, 0, e) + lerp(0, -30, x);
+    var bl = lerp(18, 0, e) + lerp(0, 16, x);
+    el.style.transform = 'translateY(' + ty + 'px) rotate(' + rot + 'deg) scale(' + sc + ')';
+    el.style.filter = bl > 0.2 ? 'blur(' + bl.toFixed(1) + 'px)' : 'none';
+    el.style.opacity = Math.min(1, e * 2) * (1 - x);
+    el.style.zIndex = x > 0 ? 2 : 5;   // ao sair, fica atrás das metades que fecham por cima
+  }
+
+  /* ---------- Textos ---------- */
+  function texto(el, t, a, b, sobe) {
+    var e = easeOut(fase(t, a, a + 0.3)), s = fase(t, b - 0.3, b);
+    el.style.opacity = e * (1 - s);
+    el.style.transform = 'translateY(' + lerp(sobe || 24, 0, e) + 'px)';
+  }
+
+  /* ---------- Desenho de cada instante ---------- */
+  function render(t) {
+    var th = kf(ROT, t);
+    var v = Math.abs(kf(ROT, t + 0.02) - kf(ROT, t - 0.02)) / 0.04;   // graus/s
+    var sep = kf(SEP, t);
+    var aberto = clamp(sep / 250);
+
+    // emblema: entrada, rotação, metades
+    var entra = easeOut(fase(t, 0, 0.8));
+    $('rot').style.transform = 'rotateY(' + th.toFixed(2) + 'deg)';
+    $('esq').style.transform = 'translateX(' + (-sep).toFixed(1) + 'px)';
+    $('dir').style.transform = 'translateX(' + sep.toFixed(1) + 'px)';
+
+    // desfoque de varrimento proporcional à velocidade (≥13 px nos giros)
+    var bl = Math.max(0, (v - 90) / 38);
+    $('vg').setAttribute('stdDeviation', bl.toFixed(1) + ' 0');
+    $('emb').style.filter = bl > 0.3 ? 'url(#varrimento)' : 'none';
+
+    // fecho: emblema sobe e encolhe para o lockup
+    var lk = easeOut(fase(t, 16.4, 17.1));
+    var embY = lerp(0, -110, lk), embS = lerp(1, 0.72, lk) * lerp(0.6, 1, entra);
+    $('emb').style.transform = 'translateY(' + embY + 'px) scale(' + embS + ')';
+    $('emb').style.opacity = entra;
+
+    // câmara: aproxima 5% com a cápsula fechada, recua ao abrir
+    $('cam').style.transform = 'scale(' + (1.05 - 0.05 * aberto).toFixed(4) + ')';
+
+    // halo a pulsar em cada abertura e fecho
+    var pulso = 0; EVENTOS.forEach(function (e) { pulso += Math.exp(-Math.pow((t - e) / 0.28, 2)); });
+    var claro = fase(t, 16.5, 17.0);
+    $('halo').style.opacity = ((0.22 + 0.78 * clamp(pulso)) * (1 - claro)).toFixed(3);
+    $('halo').style.transform = 'translateY(' + embY + 'px) scale(' + (0.9 + 0.2 * clamp(pulso)).toFixed(3) + ')';
+
+    // fundo: navy → claro no último segundo e meio
+    var r = Math.round(lerp(1, 247, claro)), g = Math.round(lerp(36, 250, claro)), b = Math.round(lerp(63, 252, claro));
+    $('palco').style.background = 'rgb(' + r + ',' + g + ',' + b + ')';
+    particulas(t, 1 - claro);
+
+    // painéis
+    painel($('p-crianca'), t, 1.0, 3.5, 4.2);
+    painel($('p-atual'), t, 5.3, 8.9, 9.25);
+
+    // textos
+    texto($('t-abertura'), t, 2.5, 3.4);
+    texto($('t-nome'), t, 7.3, 8.7);
+    texto($('t-desejo'), t, 12.0, 14.9);
+    texto($('t-objetos'), t, 12.9, 14.9);
+    [].forEach.call(document.querySelectorAll('.obj'), function (o, i) {
+      var a = 13.3 + i * 0.26, e = easeOut(fase(t, a, a + 0.35));
+      o.style.opacity = e; o.style.transform = 'translateY(' + lerp(30, 0, e) + 'px) scale(' + lerp(0.8, 1, e) + ')';
+    });
+    var lt = easeOut(fase(t, 16.9, 17.4));
+    $('lockup').style.opacity = lt; $('lockup').style.transform = 'translateY(' + lerp(24, 0, lt) + 'px)';
+  }
+  window.render = render;
+
+  /* ---------- Dados ---------- */
+  function carregar(base) {
+    return new Promise(function (res) {
+      var ext = ['jpg', 'jpeg', 'JPG', 'JPEG', 'png'], i = 0, img = new Image();
+      img.onload = function () { res(img.src); };
+      img.onerror = function () { i++; if (i < ext.length) img.src = base + '.' + ext[i]; else res(null); };
+      img.src = base + '.' + ext[0];
+    });
+  }
+  var id = new URLSearchParams(location.search).get('id');
+  Promise.all([fetch('pessoas.json').then(function (r) { return r.json(); }), fetch('../../conteudo/candidatos.json').then(function (r) { return r.json(); })])
+  .then(function (d) {
+    var P = d[0], C = d[1], pessoa = P.pessoas.filter(function (p) { return p.id === id; })[0] || P.pessoas[0], cand = null, orgao = '';
+    C.orgaos.forEach(function (o) { o.grupos.forEach(function (g) { g.pessoas.forEach(function (c) { if (c.id === pessoa.id) { cand = c; orgao = o.orgao; } }); }); });
+    $('frase').textContent = P.fraseAbertura;
+    $('nome').textContent = cand ? cand.nome : pessoa.id;
+    $('papel').textContent = cand ? cand.cargo + ' · ' + orgao : '';
+    $('desejo').textContent = '“' + pessoa.desejo.replace(/\.$/, '') + '”';
+    $('objetos').innerHTML = pessoa.objetos.slice(0, 3).map(function (o) { return '<div class="obj">' + icone(o.icone) + '<span>' + o.nome + '</span></div>'; }).join('');
+    var ic = $('p-crianca').querySelector('img'), ia = $('p-atual').querySelector('img');
+    if (pessoa.focoCrianca) ic.style.objectPosition = pessoa.focoCrianca;
+    if (pessoa.focoAtual) ia.style.objectPosition = pessoa.focoAtual;
+    return Promise.all([carregar('../../fotos/' + pessoa.id + '-crianca'), carregar('../../fotos/' + pessoa.id + '-atual')]).then(function (s) {
+      if (s[0]) ic.src = s[0]; if (s[1]) ia.src = s[1];
+      return Promise.all([ic, ia].map(function (im) { return im.src ? im.decode().catch(function () {}) : null; }));
+    });
+  }).then(function () { return document.fonts.ready; }).then(function () {
+    render(0);
+    document.body.setAttribute('data-pronto', '1');
+    if (/play=1/.test(location.search)) {
+      var t0 = performance.now();
+      (function f() { var t = (performance.now() - t0) / 1000; if (t > DUR + 1.5) t0 = performance.now(); render(Math.min(t, DUR)); requestAnimationFrame(f); })();
+    }
+  });
+})();
+</script>
+</body>
+</html>
