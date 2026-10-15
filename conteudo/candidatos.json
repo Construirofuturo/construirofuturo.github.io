@@ -10,7 +10,7 @@
             { "id": "antonio-luz-pereira", "nome": "António Luz Pereira", "nomeCompleto": "António Da Luz Pereira", "cargo": "Presidente" },
             { "id": "nina-monteiro", "nome": "Nina Monteiro", "nomeCompleto": "Nina Monteiro Silva Ferreira Francisco", "cargo": "Vice-presidente" },
             { "id": "gil-correia", "nome": "Gil Correia", "nomeCompleto": "Gil Roberto Correia Lopes", "cargo": "Vice-presidente" },
-            { "id": "mario-santos", "nome": "Mário Santos", "nomeCompleto": "Mário Alexandre Pinto Pereira Santos", "cargo": "Vice-presidente", "zoomAtual": 1.8, "centroZoomAtual": "49% 28%", "focoCrianca": "center 10%" },
+            { "id": "mario-santos", "nome": "Mário Santos", "nomeCompleto": "Mário Alexandre Pinto Pereira Santos", "cargo": "Vice-presidente" },
             { "id": "madalena-leite-rio", "nome": "Madalena Leite Rio", "nomeCompleto": "Maria Madalena Ponte P Leite Rio", "cargo": "Secretário" },
             { "id": "ines-teles", "nome": "Inês Teles", "nomeCompleto": "Inês Seabra Teles", "cargo": "Tesoureiro" },
             { "id": "andre-reis", "nome": "André Reis", "nomeCompleto": "André Filipe Santos Reis", "cargo": "Vogal" },
