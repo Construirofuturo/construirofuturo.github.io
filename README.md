@@ -234,4 +234,8 @@ fonts/                tipos de letra (Montserrat, Source Serif 4), alojados loca
 apps-script/          código do recetor do formulário (a colar no Google Apps Script)
 ```
 
-Sem cookies, sem estatísticas de terceiros, sem pedidos externos exceto o envio do formulário.
+## Estatísticas de visitas
+
+O site conta as visitas com o Google Analytics (ID `G-R5F82X56NJ`), configurado **sem cookies**: não grava nada no browser de quem visita, por isso não há aviso de consentimento. O código está em `js/estatisticas.js`. Para desligar, deixe `ID_ANALYTICS` vazio nesse ficheiro.
+
+Os números veem-se em [analytics.google.com](https://analytics.google.com) → Relatórios → Tempo real / Envolvimento → Páginas e ecrãs ("Visualizações"). Sem cookies, o Analytics não reconhece quem volta: o número de **visualizações** é fiável; o de "utilizadores" fica inflacionado (cada visita conta como pessoa nova).
