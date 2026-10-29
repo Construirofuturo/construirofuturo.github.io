@@ -5,7 +5,7 @@
 <title>Carrossel da equipa · Construir o Futuro</title>
 <!--
   Carrossel Instagram (1080 × 1350) com a equipa completa, por órgão e por hierarquia.
-  Uso: equipa.html?s=0 … 5   (0 capa · 1 Direção · 2 Direção suplentes · 3 Mesa da AG · 4 Conselho Fiscal · 5 fecho)
+  Uso: equipa.html?s=0 … 4   (0 capa · 1 Direção, com suplentes · 2 Mesa da AG · 3 Conselho Fiscal · 4 fecho)
   Dados: ../conteudo/candidatos.json (nomes, cargos, enquadramento) e ../fotos/ID-atual.*
   Cada pessoa é um bloco: a fotografia é a face da frente; topo e lateral nas cores do logótipo.
   O presidente de cada órgão tem o topo a dourado.
@@ -43,6 +43,11 @@ h1 em { font-style: normal; color: #129AA5; }
 .pessoa { display: flex; flex-direction: column; align-items: center; text-align: center; }
 .pessoa .nome { font-family: 'Montserrat'; font-weight: 800; line-height: 1.12; margin-top: 12px; color: #06335C; }
 .pessoa .cargo { font-size: 17px; line-height: 1.25; color: #3D5670; margin-top: 3px; }
+.pessoa.mini .nome { margin-top: 8px; }
+.conteudo { flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 0; }
+.pessoa.mini .cargo { display: none; }
+.cubo-capa { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 0; padding: 24px 0 10px; }
+.cubo-capa svg { height: 100%; width: auto; max-width: 100%; overflow: visible; }
 
 /* ---------- Edifício por níveis ---------- */
 .obra { display: flex; margin-top: 22px; }
@@ -80,7 +85,7 @@ h1 em { font-style: normal; color: #129AA5; }
 <div id="raiz"></div>
 <script>
 (function () {
-  var S = +new URLSearchParams(location.search).get('s') || 0, TOTAL = 6;
+  var S = +new URLSearchParams(location.search).get('s') || 0, TOTAL = 5;
   var COR = { // [topo, lateral]
     direcao: ['#0A72BA', '#01325B'], mesa: ['#03B0B8', '#02727C'], fiscal: ['#0A4F8A', '#032646'], ouro: ['#EBAB04', '#B07402']
   };
@@ -135,9 +140,31 @@ h1 em { font-style: normal; color: #129AA5; }
     return '<div class="bloco" style="width:' + (lado + d) + 'px;height:' + (lado + d) + 'px">' + faces +
       '<div class="frente" style="top:' + d + 'px;width:' + lado + 'px;height:' + lado + 'px"><img src="' + p.foto + '" alt=""></div></div>';
   }
-  function pessoa(p, lado, cor, tamNome) {
-    return '<div class="pessoa" style="width:' + (lado + 56) + 'px">' + bloco(p, lado, cor) +
+  function pessoa(p, lado, cor, tamNome, larg, mini) {
+    return '<div class="pessoa' + (mini ? ' mini' : '') + '" style="width:' + (larg || lado + 56) + 'px">' + bloco(p, lado, cor) +
       '<div class="nome" style="font-size:' + tamNome + 'px">' + p.nome + '</div><div class="cargo">' + p.cargo + '</div></div>';
+  }
+  // cubo isométrico 3×3×3 com uma fotografia em cada quadrado das 3 faces visíveis
+  function cuboFotos(lista) {
+    var KX = 0.866, KY = 0.524, KZ = 1.08, C = 100;
+    var P = function (x, y, z) { return [(x - y) * KX * C, (x + y) * KY * C - z * KZ * C]; };
+    var cel = function (o, u, v) { return [u[0] - o[0], u[1] - o[1], v[0] - o[0], v[1] - o[1], o[0], o[1]]; };
+    var cels = [];
+    [[1,1],[0,0],[1,0],[2,0],[0,1],[2,1],[0,2],[1,2],[2,2]].forEach(function (q) { cels.push([cel(P(q[0], q[1], 3), P(q[0] + 1, q[1], 3), P(q[0], q[1] + 1, 3)), 0]); });
+    for (var k = 0; k < 3; k++) for (var i = 0; i < 3; i++) cels.push([cel(P(i, 3, 3 - k), P(i + 1, 3, 3 - k), P(i, 3, 2 - k)), 0.14]);
+    for (k = 0; k < 3; k++) for (var j = 0; j < 3; j++) cels.push([cel(P(3, 3 - j, 3 - k), P(3, 2 - j, 3 - k), P(3, 3 - j, 2 - k)), 0.28]);
+    var g = '';
+    lista.slice(0, 27).forEach(function (p, n) {
+      var m = cels[n][0];
+      g += '<g transform="matrix(' + m.map(function (v) { return v.toFixed(3); }).join(' ') + ')"><g transform="translate(0.035 0.035) scale(0.93)">' +
+        '<image href="' + p.foto + '" width="1" height="1" preserveAspectRatio="none"/>' +
+        '<rect width="1" height="1" fill="#03243F" opacity="' + cels[n][1] + '"/></g></g>';
+    });
+    var q = function (a) { var r = P(a[0], a[1], a[2]); return r[0].toFixed(1) + ' ' + r[1].toFixed(1); };
+    g += '<path d="M' + q([0,0,3]) + ' L' + q([3,0,3]) + ' L' + q([3,0,0]) + ' L' + q([3,3,0]) + ' L' + q([0,3,0]) + ' L' + q([0,3,3]) + ' Z M' + q([3,3,3]) + ' L' + q([3,0,3]) +
+      ' M' + q([3,3,3]) + ' L' + q([0,3,3]) + ' M' + q([3,3,3]) + ' L' + q([3,3,0]) + '" fill="none" stroke="#EBAB04" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>';
+    var x0 = P(0, 3, 0)[0] - 10, x1 = P(3, 0, 0)[0] + 10, y0 = P(0, 0, 3)[1] - 10, y1 = P(3, 3, 0)[1] + 10;
+    return '<svg viewBox="' + [x0, y0, x1 - x0, y1 - y0].join(' ') + '" aria-hidden="true">' + g + '</svg>';
   }
   var topo = function (dir) { return '<div class="topo"><span class="marca">' + CUBO + 'Construir o Futuro</span><span class="dir">' + dir + '</span></div>'; };
   var rodape = function (desliza) { return '<div class="rodape"><span>Órgãos Sociais Nacionais · 2027–2029</span>' +
@@ -148,7 +175,7 @@ h1 em { font-style: normal; color: #129AA5; }
     var html = '<div class="obra"><div class="cota" id="cota"></div><div class="niveis">';
     niveis.forEach(function (n, i) {
       html += '<div class="nivel" data-rot="' + n[0] + '" data-sub="' + n[1] + '">' +
-        n[2].map(function (p, j) { return pessoa(p, n[3], (i === 0 && j === 0 && n[4]) ? 'ouro' : cor, n[3] > 130 ? 22 : 19); }).join('') + '</div>';
+        n[2].map(function (p, j) { return pessoa(p, n[3], (i === 0 && j === 0 && n[4]) ? 'ouro' : cor, n[3] > 130 ? 22 : n[3] > 100 ? 19 : 17); }).join('') + '</div>';
     });
     return html + '</div></div>';
   }
@@ -177,43 +204,35 @@ h1 em { font-style: normal; color: #129AA5; }
     var o = D.org, html;
     var cargo = function (lista, re) { return lista.filter(function (p) { return re.test(p.cargo); }); };
     if (S === 0) {
-      // pirâmide de 27 blocos: 2+3+4+5+6+7
-      var filas = [2, 3, 4, 5, 6, 7], k = 0, pir = '';
-      filas.forEach(function (n) {
-        pir += '<div class="fila">';
-        for (var i = 0; i < n; i++, k++) { var p = D.todos[k]; pir += bloco(p, 98, k === 0 ? 'ouro' : p.org); }
-        pir += '</div>';
-      });
+      // ordem no cubo: topo = Direção (presidente ao centro); esquerda = suplentes da Direção + presidente da Mesa; direita = restantes
       html = '<section class="s claro">' + topo('A equipa') +
         '<div class="rotulo"><span>Lista candidata</span><span class="regua"></span></div>' +
         '<h1>27 peças,<br><em>uma estrutura.</em></h1>' +
         '<p class="capa-sub">Direção, Mesa da Assembleia Geral e Conselho Fiscal. <b>Conhece quem quer construir o futuro.</b></p>' +
-        '<div class="piramide">' + pir + '</div>' + rodape(true) + '</section>';
+        '<div class="cubo-capa">' + cuboFotos(D.todos) + '</div>' + rodape(true) + '</section>';
     } else if (S === 1) {
       var e = o.direcao.efetivos;
       html = '<section class="s claro">' + topo('A equipa · 1 de 3') +
         '<div class="rotulo"><span>Órgão executivo</span><span class="regua"></span></div><h1>Direção</h1>' +
         edificio([
-          ['Presidência', 'Nível 1', cargo(e, /^Presidente/), 140, true],
-          ['Vice-presidência', 'Nível 2', cargo(e, /^Vice/), 116],
-          ['Secretaria e tesouraria', 'Nível 3', cargo(e, /Secret|Tesour/), 116],
-          ['Vogais', 'Nível 4', cargo(e, /^Vogal/), 116]
-        ], 'direcao') + rodape(false) + '</section>';
-    } else if (S === 2) {
-      html = '<section class="s claro">' + topo('A equipa · 1 de 3') +
-        '<div class="rotulo"><span>Direção</span><span class="regua"></span></div><h1>Suplentes<br><em>da Direção</em></h1>' +
-        '<div class="grelha">' + o.direcao.suplentes.map(function (p) { return pessoa(p, 150, 'direcao', 21); }).join('') + '</div>' +
+          ['Presidência', '', cargo(e, /^Presidente/), 104, true],
+          ['Vice-presidência', '', cargo(e, /^Vice/), 88],
+          ['Secretaria e tesouraria', '', cargo(e, /Secret|Tesour/), 88],
+          ['Vogais', '', cargo(e, /^Vogal/), 88]
+        ], 'direcao') +
+        '<div class="subtitulo" style="margin-top:14px">Suplentes</div><div class="grelha" style="margin:16px -64px 0;gap:0 2px;flex-wrap:nowrap">' +
+        o.direcao.suplentes.map(function (p) { return pessoa(p, 86, 'direcao', 16, 128, true); }).join('') + '</div>' +
         rodape(false) + '</section>';
-    } else if (S === 3 || S === 4) {
-      var k2 = S === 3 ? 'mesa' : 'fiscal', g = o[k2], titulo = S === 3 ? 'Mesa da<br><em>Assembleia Geral</em>' : 'Conselho<br><em>Fiscal</em>';
-      html = '<section class="s claro">' + topo('A equipa · ' + (S - 1) + ' de 3') +
-        '<div class="rotulo"><span>' + (S === 3 ? 'Órgão deliberativo' : 'Órgão de fiscalização') + '</span><span class="regua"></span></div><h1>' + titulo + '</h1>' +
+    } else if (S === 2 || S === 3) {
+      var k2 = S === 2 ? 'mesa' : 'fiscal', g = o[k2], titulo = S === 2 ? 'Mesa da<br><em>Assembleia Geral</em>' : 'Conselho<br><em>Fiscal</em>';
+      html = '<section class="s claro">' + topo('A equipa · ' + S + ' de 3') +
+        '<div class="rotulo"><span>' + (S === 2 ? 'Órgão deliberativo' : 'Órgão de fiscalização') + '</span><span class="regua"></span></div><h1>' + titulo + '</h1><div class="conteudo">' +
         edificio([
-          ['Presidência', 'Nível 1', cargo(g.efetivos, /^Presidente/), 150, true],
-          ['Secretariado', 'Nível 2', cargo(g.efetivos, /Secret/), 126]
+          ['Presidência', '', cargo(g.efetivos, /^Presidente/), 178, true],
+          ['Secretariado', '', cargo(g.efetivos, /Secret/), 150]
         ], k2) +
-        '<div class="subtitulo">Suplentes</div><div class="grelha" style="margin-top:22px">' +
-        g.suplentes.map(function (p) { return pessoa(p, 98, k2, 18); }).join('') + '</div>' +
+        '<div class="subtitulo" style="margin-top:26px">Suplentes</div><div class="grelha" style="margin-top:22px">' +
+        g.suplentes.map(function (p) { return pessoa(p, 126, k2, 20); }).join('') + '</div></div>' +
         rodape(false) + '</section>';
     } else {
       html = '<section class="s escuro">' + topo('A equipa') +
