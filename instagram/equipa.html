@@ -90,6 +90,21 @@ h1 em { font-style: normal; color: #129AA5; }
   /* ---------- recorte quadrado (mesma lógica de enquadramento do site) ---------- */
   function pct(s, eixo) { if (!s) return null; var p = s.trim().split(/\s+/), v = p[eixo] || 'center';
     return v === 'center' ? 0.5 : v === 'top' || v === 'left' ? 0 : v === 'bottom' || v === 'right' ? 1 : parseFloat(v) / 100; }
+  var QUADRO = {
+    'madalena-leite-rio': [0.50, 0.02, 0.90], 'mario-santos': [0.43, 0.00, 0.92], 'ana-leonor-assuncao-silva': [0.48, 0.02, 0.95],
+    'daniela-emilio': [0.55, 0.02, 0.96], 'edgar-frutuoso-vaz': [0.50, 0.11, 0.95], 'nina-monteiro': [0.48, 0.03, 0.90],
+    'rui-diogo-rodrigues': [0.52, 0.14, 0.85], 'ana-rita-queiros': [0.52, 0.03, 0.55], 'denise-velho': [0.50, 0.12, 0.62],
+    'deolinda-beca-almeida': [0.50, 0.03, 0.75], 'vera-pires-da-silva': [0.48, 0.00, 0.65], 'maria-conceicao-outeirinho': [0.48, 0.00, 0.70],
+    'jose-pedro-antunes': [0.45, 0.02, 0.62], 'nuno-jacinto': [0.50, 0.10, 0.55], 'ligia-churro': [0.50, 0.08, 0.65]
+  };
+  // quadrado de cabeça e ombros: [centro x, topo y, lado] em frações da imagem (lado = fração do lado menor)
+  function quadroFixo(img, q) {
+    var w = img.naturalWidth, h = img.naturalHeight, lado = Math.min(w, h) * q[2];
+    var sx = Math.max(0, Math.min(w - lado, q[0] * w - lado / 2)), sy = Math.max(0, Math.min(h - lado, q[1] * h));
+    var c = document.createElement('canvas'); c.width = c.height = 520;
+    c.getContext('2d').drawImage(img, sx, sy, lado, lado, 0, 0, 520, 520);
+    return c.toDataURL('image/jpeg', 0.92);
+  }
   function quadrado(img, foco, zoom, centro) {
     var w = img.naturalWidth, h = img.naturalHeight, R = 0.8, cw, ch;
     if (w / h > R) { ch = h; cw = h * R; } else { cw = w; ch = w / R; }
@@ -126,7 +141,7 @@ h1 em { font-style: normal; color: #129AA5; }
   }
   var topo = function (dir) { return '<div class="topo"><span class="marca">' + CUBO + 'Construir o Futuro</span><span class="dir">' + dir + '</span></div>'; };
   var rodape = function (desliza) { return '<div class="rodape"><span>Órgãos Sociais Nacionais · 2027–2029</span>' +
-    (desliza ? '<span class="desliza">Desliza <i></i>' + SETA + '</span>' : '<span>' + (S + 1) + ' / ' + TOTAL + '</span>') + '</div>'; };
+    (desliza ? '<span class="desliza">Desliza <i></i>' + SETA + '</span>' : '') + '</div>'; };
 
   // edifício: níveis [[rótulo, subrótulo, pessoas, lado, cor-do-1.º]] com cota lateral
   function edificio(niveis, cor) {
@@ -142,7 +157,7 @@ h1 em { font-style: normal; color: #129AA5; }
     var r0 = cota.getBoundingClientRect(), ys = [];
     [].forEach.call(document.querySelectorAll('.nivel'), function (n) {
       var b = n.querySelector('.bloco').getBoundingClientRect(), y = b.top + b.height / 2 - r0.top; ys.push(y);
-      cota.insertAdjacentHTML('beforeend', '<div class="marca-n" style="top:' + y + 'px"></div><div class="rot" style="top:' + y + 'px"><b>' + n.dataset.sub + '</b>' + n.dataset.rot + '</div>');
+      cota.insertAdjacentHTML('beforeend', '<div class="marca-n" style="top:' + y + 'px"></div><div class="rot" style="top:' + y + 'px">' + n.dataset.rot + '</div>');
     });
     cota.insertAdjacentHTML('afterbegin', '<div class="linha" style="top:' + ys[0] + 'px;height:' + (ys[ys.length - 1] - ys[0]) + 'px"></div>');
   }
@@ -156,7 +171,7 @@ h1 em { font-style: normal; color: #129AA5; }
         p.org = k; todos.push(p); (/Suplente/i.test(g.grupo) ? org[k].suplentes : org[k].efetivos).push(p); }); });
     });
     return Promise.all(todos.map(function (p) {
-      return carregar('../fotos/' + p.id + '-atual').then(function (img) { p.foto = img ? quadrado(img, p.focoAtual, p.zoomAtual, p.centroZoomAtual) : ''; });
+      return carregar('../fotos/' + p.id + '-atual').then(function (img) { p.foto = !img ? '' : QUADRO[p.id] ? quadroFixo(img, QUADRO[p.id]) : quadrado(img, p.focoAtual, p.zoomAtual, p.centroZoomAtual); });
     })).then(function () { return { todos: todos, org: org }; });
   }).then(function (D) {
     var o = D.org, html;
@@ -172,7 +187,7 @@ h1 em { font-style: normal; color: #129AA5; }
       html = '<section class="s claro">' + topo('A equipa') +
         '<div class="rotulo"><span>Lista candidata</span><span class="regua"></span></div>' +
         '<h1>27 peças,<br><em>uma estrutura.</em></h1>' +
-        '<p class="capa-sub">Direção, Mesa da Assembleia Geral e Conselho Fiscal. <b>Conhece quem vai construir.</b></p>' +
+        '<p class="capa-sub">Direção, Mesa da Assembleia Geral e Conselho Fiscal. <b>Conhece quem quer construir o futuro.</b></p>' +
         '<div class="piramide">' + pir + '</div>' + rodape(true) + '</section>';
     } else if (S === 1) {
       var e = o.direcao.efetivos;
