@@ -39,10 +39,13 @@ h1 em { font-style: normal; color: #2EC4CC; }
     <h1>Construir<br><em>o Futuro</em></h1>
     <div class="sub">Órgãos Sociais Nacionais · Triénio 2027–2029</div>
   </div>
-  <div class="datas">Vota · 18 a 28 de novembro</div>
+  <div class="datas" id="datas">Vota · 18 a 28 de novembro</div>
   <img class="logo" src="../img/logotipo.svg" alt="">
   <div class="cota"><span>2027</span><i></i><span>2029</span></div>
 </div>
-<script>document.fonts.ready.then(function () { document.querySelector('.logo').decode().catch(function(){}).then(function () { document.body.setAttribute('data-pronto', '1'); }); });</script>
+<script>
+// banner.html?voto=1 → versão para usar durante a votação
+if (/voto=1/.test(location.search)) document.getElementById('datas').textContent = 'Votação aberta · até 28 de novembro, 12h00';
+document.fonts.ready.then(function () { document.querySelector('.logo').decode().catch(function(){}).then(function () { document.body.setAttribute('data-pronto', '1'); }); });</script>
 </body>
 </html>

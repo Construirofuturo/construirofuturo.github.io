@@ -89,12 +89,29 @@ h1 em { font-style: normal; color: #129AA5; display: block; }
         '<ol class="lista' + (e.propostas.length > 4 ? ' longa' : '') + '">' + e.propostas.map(function (p, i) {
           return '<li><span>' + String(i + 1).padStart(2, '0') + '</span><div>' + esc(p) + '</div></li>'; }).join('') + '</ol>' +
         rodape + '</section>';
+    } else if (pg === 'votar') {
+      // informação do anúncio oficial do processo eleitoral
+      var passos = [
+        ['Quem vota', 'Os sócios da APMGF em pleno gozo dos seus direitos a 30 de agosto de 2026.'],
+        ['O teu código', 'A APMGF enviou-te um código por SMS ou email, para o contacto registado na Associação. Procura-o: vais precisar dele.'],
+        ['Onde', 'Votação eletrónica, na plataforma indicada pela APMGF.'],
+        ['Até quando', 'Até às 12h00 de 28 de novembro, hora de Portugal Continental.'],
+        ['Presencialmente', 'A 28 de novembro, das 11h00 às 12h00, na sede da APMGF, em Lisboa.'],
+        ['Sem código?', 'Contacta a sede da APMGF. Não deixes para o último dia.']
+      ];
+      html = '<section class="s claro">' + topo('Como votar') +
+        '<div class="rotulo"><span>Eleições APMGF</span><span class="regua"></span></div>' +
+        '<h1>Como<em>votar.</em></h1>' +
+        '<ol class="lista longa" style="margin-bottom:24px">' + passos.map(function (x, i) {
+          return '<li><span>' + String(i + 1).padStart(2, '0') + '</span><div><b style="font-family:Montserrat;font-weight:800;font-size:.8em;text-transform:uppercase;letter-spacing:.04em;color:#055695">' + x[0] + '</b><br>' + x[1] + '</div></li>'; }).join('') + '</ol>' +
+        rodape + '</section>';
     } else {
+      var aberta = pg === 'fecho-voto';
       html = '<section class="s escuro">' + topo('APMGF · 2027–2029') +
         '<div class="fecho"><img class="logo" src="../img/logotipo.svg" alt="">' +
         '<h1>Contamos<em>com o teu voto.</em></h1>' +
-        '<p class="linha">Votação eletrónica, das 0h00 de 18 de novembro às 12h00 de 28 de novembro.</p>' +
-        '<div class="datas">Vota · 18 a 28 de novembro</div>' +
+        '<p class="linha">' + (aberta ? 'A votação eletrónica está aberta até às 12h00 de 28 de novembro.' : 'Votação eletrónica, das 0h00 de 18 de novembro às 12h00 de 28 de novembro.') + '</p>' +
+        '<div class="datas">' + (aberta ? 'Vota até 28 de novembro · 12h00' : 'Vota · 18 a 28 de novembro') + '</div>' +
         '<div class="site"><small>Manifesto completo, equipa e contributos</small>construirofuturo.github.io</div></div>' +
         rodape + '</section>';
     }
