@@ -14,7 +14,7 @@
             { "id": "madalena-leite-rio", "nome": "Madalena Leite Rio", "nomeCompleto": "Maria Madalena Ponte P Leite Rio", "cargo": "Secretário" },
             { "id": "ines-teles", "nome": "Inês Teles", "nomeCompleto": "Inês Seabra Teles", "cargo": "Tesoureiro" },
             { "id": "andre-reis", "nome": "André Reis", "nomeCompleto": "André Filipe Santos Reis", "cargo": "Vogal" },
-            { "id": "carlos-mestre", "nome": "Carlos Mestre", "nomeCompleto": "Carlos Manuel Caeiro Mestre", "cargo": "Vogal" },
+            { "id": "carlos-mestre", "nome": "Carlos Mestre", "nomeCompleto": "Carlos Manuel Caeiro Mestre", "cargo": "Vogal", "zoomAtual": 2.2, "centroZoomAtual": "60% 12%" },
             { "id": "luis-monteiro", "nome": "Luís Monteiro", "nomeCompleto": "Luís Miguel André Monteiro", "cargo": "Vogal", "zoomAtual": 2, "centroZoomAtual": "50% 40%", "focoCrianca": "5% center", "zoomCrianca": 1.7, "centroZoomCrianca": "45% 18%" }
           ]
         },
@@ -24,7 +24,7 @@
             { "id": "ana-leonor-assuncao-silva", "nome": "Ana Leonor Assunção Silva", "nomeCompleto": "Ana Leonor Assunção Silva", "cargo": "Suplente" },
             { "id": "ana-rita-queiros", "nome": "Ana Rita Queirós", "nomeCompleto": "Ana Rita Queirós", "cargo": "Suplente" },
             { "id": "denise-velho", "nome": "Denise Velho", "nomeCompleto": "Denise Alexandra Cunha Velho", "cargo": "Suplente" },
-            { "id": "ines-ribeiro-de-castro", "nome": "Inês Ribeiro de Castro", "nomeCompleto": "Inês Gomes Ribeiro Castro", "cargo": "Suplente" },
+            { "id": "ines-ribeiro-de-castro", "nome": "Inês Ribeiro de Castro", "nomeCompleto": "Inês Gomes Ribeiro Castro", "cargo": "Suplente", "zoomAtual": 1.6, "centroZoomAtual": "50% 22%" },
             { "id": "ligia-churro", "nome": "Lígia Churro", "nomeCompleto": "Lígia Maria Saltão Churro", "cargo": "Suplente" },
             { "id": "rui-diogo-rodrigues", "nome": "Rui Diogo Rodrigues", "nomeCompleto": "Rui Diogo Oliveira Rodrigues", "cargo": "Suplente" },
             { "id": "daniela-emilio", "nome": "Daniela Emílio", "nomeCompleto": "Daniela Jesus Lanita Emílio", "cargo": "Suplente" },
@@ -61,14 +61,14 @@
           "pessoas": [
             { "id": "ana-margarida-cruz", "nome": "Ana Margarida Cruz", "nomeCompleto": "Ana Margarida Antunes Cruz", "cargo": "Presidente", "zoomAtual": 1.4, "centroZoomAtual": "50% 20%", "zoomCrianca": 1.15, "centroZoomCrianca": "55% 45%" },
             { "id": "catarina-bica", "nome": "Catarina Bica", "nomeCompleto": "Catarina Alexandra Diogo Bica", "cargo": "Primeiro-Secretário" },
-            { "id": "ana-luis-pereira", "nome": "Ana Luís Pereira", "nomeCompleto": "Ana Luís Ferreira Castro Pereira", "cargo": "Segundo-Secretário" }
+            { "id": "ana-luis-pereira", "nome": "Ana Luís Pereira", "nomeCompleto": "Ana Luís Ferreira Castro Pereira", "cargo": "Segundo-Secretário", "zoomAtual": 1.9, "centroZoomAtual": "47% 12%" }
           ]
         },
         {
           "grupo": "Suplentes",
           "pessoas": [
             { "id": "edgar-frutuoso-vaz", "nome": "Edgar Frutuoso Vaz", "nomeCompleto": "Edgar Luís Frutuoso Vaz", "cargo": "Suplente" },
-            { "id": "miguel-azevedo", "nome": "Miguel Azevedo", "nomeCompleto": "Miguel Ornelas Pires Mota Azevedo", "cargo": "Suplente" }
+            { "id": "miguel-azevedo", "nome": "Miguel Azevedo", "nomeCompleto": "Miguel Ornelas Pires Mota Azevedo", "cargo": "Suplente", "focoAtual": "100% center", "zoomAtual": 1.7, "centroZoomAtual": "45% 10%" }
           ]
         }
       ]

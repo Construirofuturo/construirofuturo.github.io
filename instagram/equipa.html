@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>Carrossel da equipa · Construir o Futuro</title>
+<!--
+  Carrossel Instagram (1080 × 1350) com a equipa completa, por órgão e por hierarquia.
+  Uso: equipa.html?s=0 … 5   (0 capa · 1 Direção · 2 Direção suplentes · 3 Mesa da AG · 4 Conselho Fiscal · 5 fecho)
+  Dados: ../conteudo/candidatos.json (nomes, cargos, enquadramento) e ../fotos/ID-atual.*
+  Cada pessoa é um bloco: a fotografia é a face da frente; topo e lateral nas cores do logótipo.
+  O presidente de cada órgão tem o topo a dourado.
+-->
+<style>
+@font-face { font-family: 'Montserrat'; src: url('../fonts/montserrat.woff2') format('woff2'); font-weight: 600 800; }
+@font-face { font-family: 'Source Serif 4'; src: url('../fonts/source-serif-4.woff2') format('woff2'); font-weight: 400 600; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1350px; overflow: hidden; }
+body { font-family: 'Source Serif 4', Georgia, serif; color: #06335C; }
+.s { position: relative; width: 1080px; height: 1350px; padding: 72px 80px 64px; display: flex; flex-direction: column; }
+.claro { background: #FAF8F4 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='41.57'%3E%3Cpath d='M0 0 72 41.57M0 41.57 72 0' stroke='%2306335C' stroke-opacity='.05' fill='none'/%3E%3C/svg%3E"); background-size: 72px 41.57px; }
+.escuro { background-color: #03243F; color: #fff;
+  background-image: linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px); background-size: 36px 36px; }
+
+.topo { display: flex; justify-content: space-between; align-items: center; font-family: 'Montserrat'; font-weight: 800; font-size: 25px; letter-spacing: .06em; text-transform: uppercase; }
+.marca { display: flex; align-items: center; gap: 14px; } .marca svg { width: 30px; }
+.topo .dir { font-weight: 700; font-size: 20px; letter-spacing: .14em; opacity: .7; }
+.rotulo { margin-top: 40px; display: flex; align-items: center; gap: 18px; font-family: 'Montserrat'; font-weight: 700; font-size: 23px; letter-spacing: .16em; text-transform: uppercase; color: #0B7880; }
+.escuro .rotulo { color: #EBAB04; }
+.regua { position: relative; width: 80px; height: 2px; background: currentColor; opacity: .6; }
+.regua::before, .regua::after { content: ''; position: absolute; top: -7px; width: 2px; height: 16px; background: currentColor; }
+.regua::before { left: 0; } .regua::after { right: 0; }
+h1 { font-family: 'Montserrat'; font-weight: 800; text-transform: uppercase; letter-spacing: -.02em; line-height: .98; color: #055695; margin-top: 16px; font-size: 76px; }
+h1 em { font-style: normal; color: #129AA5; }
+.escuro h1 { color: #fff; } .escuro h1 em { color: #EBAB04; }
+.rodape { margin-top: auto; display: flex; justify-content: space-between; align-items: center; font-family: 'Montserrat'; font-weight: 700; font-size: 20px; letter-spacing: .1em; text-transform: uppercase; opacity: .75; }
+.desliza { display: flex; align-items: center; gap: 14px; } .desliza i { width: 70px; border-top: 3px dashed #EBAB04; } .desliza svg { width: 22px; }
+
+/* ---------- Bloco (pessoa) ---------- */
+.bloco { position: relative; flex: none; }
+.bloco svg.faces { position: absolute; left: 0; top: 0; overflow: visible; }
+.bloco .frente { position: absolute; left: 0; overflow: hidden; background: #F2EEE6; }
+.bloco .frente img { width: 100%; height: 100%; display: block; }
+.pessoa { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.pessoa .nome { font-family: 'Montserrat'; font-weight: 800; line-height: 1.12; margin-top: 12px; color: #06335C; }
+.pessoa .cargo { font-size: 17px; line-height: 1.25; color: #3D5670; margin-top: 3px; }
+
+/* ---------- Edifício por níveis ---------- */
+.obra { display: flex; margin-top: 22px; }
+.cota { position: relative; width: 190px; flex: none; }
+.cota .linha { position: absolute; right: 24px; border-left: 2px solid rgba(6,51,92,.35); }
+.cota .marca-n { position: absolute; right: 16px; width: 18px; border-top: 2px solid rgba(6,51,92,.35); }
+.cota .rot { position: absolute; right: 46px; transform: translateY(-50%); text-align: right; font-family: 'Montserrat'; font-weight: 700; font-size: 15px; letter-spacing: .12em; text-transform: uppercase; color: #0B7880; line-height: 1.35; }
+.cota .rot b { display: block; color: #06335C; font-size: 13px; letter-spacing: .14em; opacity: .55; }
+.niveis { flex: 1; display: flex; flex-direction: column; gap: 8px; padding-right: 30px; }
+.nivel { display: flex; justify-content: center; gap: 34px; }
+
+/* Suplentes / grelhas */
+.grelha { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px 34px; margin-top: 48px; }
+.subtitulo { font-family: 'Montserrat'; font-weight: 700; font-size: 20px; letter-spacing: .16em; text-transform: uppercase; color: #0B7880; display: flex; align-items: center; gap: 16px; margin: 4px 0 0; }
+.subtitulo::after { content: ''; flex: 1; border-top: 2px dashed rgba(6,51,92,.3); }
+
+/* Capa */
+.piramide { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+.piramide .fila { display: flex; gap: 8px; }
+.capa-sub { font-size: 34px; line-height: 1.3; margin-top: 18px; max-width: 860px; }
+.capa-sub b { font-weight: 600; color: #B07402; }
+
+/* Fecho */
+.fecho { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.fecho .logo { width: 330px; margin-bottom: 54px; }
+.fecho h1 { font-size: 92px; }
+.fecho p { font-size: 40px; line-height: 1.35; margin-top: 30px; color: rgba(255,255,255,.9); max-width: 860px; }
+.fecho .datas { margin-top: 48px; align-self: flex-start; font-family: 'Montserrat'; font-weight: 800; font-size: 30px; letter-spacing: .1em; text-transform: uppercase; border: 4px solid #EBAB04; padding: 14px 22px; color: #fff; }
+.contagem { display: flex; gap: 40px; margin-top: 34px; font-family: 'Montserrat'; }
+.contagem div { font-weight: 800; font-size: 64px; color: #EBAB04; line-height: 1; }
+.contagem span { display: block; font-weight: 700; font-size: 17px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.75); margin-top: 8px; }
+</style>
+</head>
+<body>
+<div id="raiz"></div>
+<script>
+(function () {
+  var S = +new URLSearchParams(location.search).get('s') || 0, TOTAL = 6;
+  var COR = { // [topo, lateral]
+    direcao: ['#0A72BA', '#01325B'], mesa: ['#03B0B8', '#02727C'], fiscal: ['#0A4F8A', '#032646'], ouro: ['#EBAB04', '#B07402']
+  };
+  var CUBO = '<svg viewBox="690 218 276 336"><polygon points="697,302 828,225 958,305 828,383" fill="#EBAB04"/><polygon points="697,302 828,383 828,546 777,515 777,413 697,364" fill="#B07402"/><polygon points="828,383 958,305 958,468 828,546" fill="#CB8B02"/></svg>';
+  var SETA = '<svg viewBox="0 0 24 24"><path d="M4 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"/></svg>';
+
+  /* ---------- recorte quadrado (mesma lógica de enquadramento do site) ---------- */
+  function pct(s, eixo) { if (!s) return null; var p = s.trim().split(/\s+/), v = p[eixo] || 'center';
+    return v === 'center' ? 0.5 : v === 'top' || v === 'left' ? 0 : v === 'bottom' || v === 'right' ? 1 : parseFloat(v) / 100; }
+  function quadrado(img, foco, zoom, centro) {
+    var w = img.naturalWidth, h = img.naturalHeight, R = 0.8, cw, ch;
+    if (w / h > R) { ch = h; cw = h * R; } else { cw = w; ch = w / R; }
+    var fx = pct(foco, 0); if (fx === null) fx = 0.5; var fy = pct(foco, 1); if (fy === null) fy = 0.3;
+    var cx0 = (w - cw) * fx, cy0 = (h - ch) * fy, z = zoom || 1, ox = pct(centro, 0), oy = pct(centro, 1);
+    if (ox === null) ox = 0.5; if (oy === null) oy = 0.35;
+    var vw = cw / z, vh = ch / z, vx = cx0 + ox * cw * (1 - 1 / z), vy = cy0 + oy * ch * (1 - 1 / z);
+    var lado = Math.min(vw, vh), sx = vx + (vw - lado) / 2, sy = vy + (vh - lado) * 0.3;
+    var c = document.createElement('canvas'); c.width = c.height = 520;
+    c.getContext('2d').drawImage(img, sx, sy, lado, lado, 0, 0, 520, 520);
+    return c.toDataURL('image/jpeg', 0.92);
+  }
+  function carregar(base) {
+    return new Promise(function (res) {
+      var ext = ['jpg', 'jpeg', 'JPG', 'JPEG', 'png'], i = 0, img = new Image();
+      img.onload = function () { res(img); };
+      img.onerror = function () { i++; if (i < ext.length) img.src = base + '.' + ext[i]; else res(null); };
+      img.src = base + '.' + ext[0];
+    });
+  }
+
+  /* ---------- bloco ---------- */
+  function bloco(p, lado, cor) {
+    var d = Math.round(lado * 0.17), c = COR[cor];
+    var faces = '<svg class="faces" width="' + (lado + d) + '" height="' + (lado + d) + '">' +
+      '<polygon points="0,' + d + ' ' + d + ',0 ' + (lado + d) + ',0 ' + lado + ',' + d + '" fill="' + c[0] + '"/>' +
+      '<polygon points="' + lado + ',' + d + ' ' + (lado + d) + ',0 ' + (lado + d) + ',' + lado + ' ' + lado + ',' + (lado + d) + '" fill="' + c[1] + '"/></svg>';
+    return '<div class="bloco" style="width:' + (lado + d) + 'px;height:' + (lado + d) + 'px">' + faces +
+      '<div class="frente" style="top:' + d + 'px;width:' + lado + 'px;height:' + lado + 'px"><img src="' + p.foto + '" alt=""></div></div>';
+  }
+  function pessoa(p, lado, cor, tamNome) {
+    return '<div class="pessoa" style="width:' + (lado + 56) + 'px">' + bloco(p, lado, cor) +
+      '<div class="nome" style="font-size:' + tamNome + 'px">' + p.nome + '</div><div class="cargo">' + p.cargo + '</div></div>';
+  }
+  var topo = function (dir) { return '<div class="topo"><span class="marca">' + CUBO + 'Construir o Futuro</span><span class="dir">' + dir + '</span></div>'; };
+  var rodape = function (desliza) { return '<div class="rodape"><span>Órgãos Sociais Nacionais · 2027–2029</span>' +
+    (desliza ? '<span class="desliza">Desliza <i></i>' + SETA + '</span>' : '<span>' + (S + 1) + ' / ' + TOTAL + '</span>') + '</div>'; };
+
+  // edifício: níveis [[rótulo, subrótulo, pessoas, lado, cor-do-1.º]] com cota lateral
+  function edificio(niveis, cor) {
+    var html = '<div class="obra"><div class="cota" id="cota"></div><div class="niveis">';
+    niveis.forEach(function (n, i) {
+      html += '<div class="nivel" data-rot="' + n[0] + '" data-sub="' + n[1] + '">' +
+        n[2].map(function (p, j) { return pessoa(p, n[3], (i === 0 && j === 0 && n[4]) ? 'ouro' : cor, n[3] > 130 ? 22 : 19); }).join('') + '</div>';
+    });
+    return html + '</div></div>';
+  }
+  function desenhaCota() {
+    var cota = document.getElementById('cota'); if (!cota) return;
+    var r0 = cota.getBoundingClientRect(), ys = [];
+    [].forEach.call(document.querySelectorAll('.nivel'), function (n) {
+      var b = n.querySelector('.bloco').getBoundingClientRect(), y = b.top + b.height / 2 - r0.top; ys.push(y);
+      cota.insertAdjacentHTML('beforeend', '<div class="marca-n" style="top:' + y + 'px"></div><div class="rot" style="top:' + y + 'px"><b>' + n.dataset.sub + '</b>' + n.dataset.rot + '</div>');
+    });
+    cota.insertAdjacentHTML('afterbegin', '<div class="linha" style="top:' + ys[0] + 'px;height:' + (ys[ys.length - 1] - ys[0]) + 'px"></div>');
+  }
+
+  fetch('../conteudo/candidatos.json').then(function (r) { return r.json(); }).then(function (d) {
+    var todos = [], org = {};
+    d.orgaos.forEach(function (o) {
+      var k = /Dire/.test(o.orgao) ? 'direcao' : /Mesa/.test(o.orgao) ? 'mesa' : 'fiscal';
+      org[k] = { efetivos: [], suplentes: [] };
+      o.grupos.forEach(function (g) { g.pessoas.forEach(function (p) {
+        p.org = k; todos.push(p); (/Suplente/i.test(g.grupo) ? org[k].suplentes : org[k].efetivos).push(p); }); });
+    });
+    return Promise.all(todos.map(function (p) {
+      return carregar('../fotos/' + p.id + '-atual').then(function (img) { p.foto = img ? quadrado(img, p.focoAtual, p.zoomAtual, p.centroZoomAtual) : ''; });
+    })).then(function () { return { todos: todos, org: org }; });
+  }).then(function (D) {
+    var o = D.org, html;
+    var cargo = function (lista, re) { return lista.filter(function (p) { return re.test(p.cargo); }); };
+    if (S === 0) {
+      // pirâmide de 27 blocos: 2+3+4+5+6+7
+      var filas = [2, 3, 4, 5, 6, 7], k = 0, pir = '';
+      filas.forEach(function (n) {
+        pir += '<div class="fila">';
+        for (var i = 0; i < n; i++, k++) { var p = D.todos[k]; pir += bloco(p, 98, k === 0 ? 'ouro' : p.org); }
+        pir += '</div>';
+      });
+      html = '<section class="s claro">' + topo('A equipa') +
+        '<div class="rotulo"><span>Lista candidata</span><span class="regua"></span></div>' +
+        '<h1>27 peças,<br><em>uma estrutura.</em></h1>' +
+        '<p class="capa-sub">Direção, Mesa da Assembleia Geral e Conselho Fiscal. <b>Conhece quem vai construir.</b></p>' +
+        '<div class="piramide">' + pir + '</div>' + rodape(true) + '</section>';
+    } else if (S === 1) {
+      var e = o.direcao.efetivos;
+      html = '<section class="s claro">' + topo('A equipa · 1 de 3') +
+        '<div class="rotulo"><span>Órgão executivo</span><span class="regua"></span></div><h1>Direção</h1>' +
+        edificio([
+          ['Presidência', 'Nível 1', cargo(e, /^Presidente/), 140, true],
+          ['Vice-presidência', 'Nível 2', cargo(e, /^Vice/), 116],
+          ['Secretaria e tesouraria', 'Nível 3', cargo(e, /Secret|Tesour/), 116],
+          ['Vogais', 'Nível 4', cargo(e, /^Vogal/), 116]
+        ], 'direcao') + rodape(false) + '</section>';
+    } else if (S === 2) {
+      html = '<section class="s claro">' + topo('A equipa · 1 de 3') +
+        '<div class="rotulo"><span>Direção</span><span class="regua"></span></div><h1>Suplentes<br><em>da Direção</em></h1>' +
+        '<div class="grelha">' + o.direcao.suplentes.map(function (p) { return pessoa(p, 150, 'direcao', 21); }).join('') + '</div>' +
+        rodape(false) + '</section>';
+    } else if (S === 3 || S === 4) {
+      var k2 = S === 3 ? 'mesa' : 'fiscal', g = o[k2], titulo = S === 3 ? 'Mesa da<br><em>Assembleia Geral</em>' : 'Conselho<br><em>Fiscal</em>';
+      html = '<section class="s claro">' + topo('A equipa · ' + (S - 1) + ' de 3') +
+        '<div class="rotulo"><span>' + (S === 3 ? 'Órgão deliberativo' : 'Órgão de fiscalização') + '</span><span class="regua"></span></div><h1>' + titulo + '</h1>' +
+        edificio([
+          ['Presidência', 'Nível 1', cargo(g.efetivos, /^Presidente/), 150, true],
+          ['Secretariado', 'Nível 2', cargo(g.efetivos, /Secret/), 126]
+        ], k2) +
+        '<div class="subtitulo">Suplentes</div><div class="grelha" style="margin-top:22px">' +
+        g.suplentes.map(function (p) { return pessoa(p, 98, k2, 18); }).join('') + '</div>' +
+        rodape(false) + '</section>';
+    } else {
+      html = '<section class="s escuro">' + topo('A equipa') +
+        '<div class="fecho"><img class="logo" src="../img/logotipo.svg" alt="">' +
+        '<h1>Cada um,<br><em>uma peça.</em></h1>' +
+        '<div class="contagem"><div>17<span>Direção</span></div><div>5<span>Mesa da AG</span></div><div>5<span>Conselho Fiscal</span></div></div>' +
+        '<p>Uma estrutura pronta para construir a APMGF dos próximos três anos.</p>' +
+        '<div class="datas">Vota · 18 a 28 de novembro</div></div>' + rodape(false) + '</section>';
+    }
+    document.getElementById('raiz').innerHTML = html;
+    return Promise.all([].map.call(document.images, function (im) { return im.decode().catch(function () {}); }));
+  }).then(function () { return document.fonts.ready; }).then(function () {
+    desenhaCota();
+    document.body.setAttribute('data-total', TOTAL);
+    document.body.setAttribute('data-pronto', '1');
+  });
+})();
+</script>
+</body>
+</html>
