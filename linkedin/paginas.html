@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>Documento LinkedIn · Construir o Futuro</title>
+<!--
+  Páginas do documento PDF para o LinkedIn (1080 × 1350).
+  Uso: paginas.html?p=manifesto | eixo1 … eixo5 | fecho
+  As páginas da capa e da equipa vêm de ../instagram/equipa.html (s=0&li=1, s=1, s=2, s=3).
+  O gerador (gerar.js) junta tudo num único PDF.
+-->
+<style>
+@font-face { font-family: 'Montserrat'; src: url('../fonts/montserrat.woff2') format('woff2'); font-weight: 600 800; }
+@font-face { font-family: 'Source Serif 4'; src: url('../fonts/source-serif-4.woff2') format('woff2'); font-weight: 400 600; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1350px; overflow: hidden; }
+body { font-family: 'Source Serif 4', Georgia, serif; color: #06335C; }
+.s { position: relative; width: 1080px; height: 1350px; padding: 72px 80px 64px; display: flex; flex-direction: column; }
+.claro { background: #FAF8F4 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='41.57'%3E%3Cpath d='M0 0 72 41.57M0 41.57 72 0' stroke='%2306335C' stroke-opacity='.05' fill='none'/%3E%3C/svg%3E"); background-size: 72px 41.57px; }
+.escuro { background-color: #03243F; color: #fff;
+  background-image: linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px); background-size: 36px 36px; }
+.topo { display: flex; justify-content: space-between; align-items: center; font-family: 'Montserrat'; font-weight: 800; font-size: 25px; letter-spacing: .06em; text-transform: uppercase; }
+.marca { display: flex; align-items: center; gap: 14px; } .marca svg { width: 30px; }
+.topo .dir { font-weight: 700; font-size: 20px; letter-spacing: .14em; opacity: .7; }
+.rotulo { margin-top: 40px; display: flex; align-items: center; gap: 18px; font-family: 'Montserrat'; font-weight: 700; font-size: 23px; letter-spacing: .16em; text-transform: uppercase; color: #0B7880; }
+.escuro .rotulo { color: #EBAB04; }
+.rotulo b { border: 3px solid currentColor; padding: 3px 11px; letter-spacing: .08em; }
+.regua { position: relative; width: 80px; height: 2px; background: currentColor; opacity: .6; }
+.regua::before, .regua::after { content: ''; position: absolute; top: -7px; width: 2px; height: 16px; background: currentColor; }
+.regua::before { left: 0; } .regua::after { right: 0; }
+h1 { font-family: 'Montserrat'; font-weight: 800; text-transform: uppercase; letter-spacing: -.02em; line-height: 1; color: #055695; margin-top: 18px; font-size: 64px; }
+h1 em { font-style: normal; color: #129AA5; display: block; }
+.escuro h1 { color: #fff; } .escuro h1 em { color: #EBAB04; }
+.rodape { margin-top: auto; display: flex; justify-content: space-between; align-items: center; font-family: 'Montserrat'; font-weight: 700; font-size: 20px; letter-spacing: .1em; text-transform: uppercase; opacity: .75; }
+
+/* manifesto */
+.citacao { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.citacao blockquote { font-family: 'Montserrat'; font-weight: 800; font-size: 66px; line-height: 1.08; letter-spacing: -.015em; text-transform: uppercase; color: #055695; }
+.citacao blockquote em { font-style: normal; color: #129AA5; }
+.citacao .barra { width: 120px; height: 10px; background: #EBAB04; margin: 44px 0 34px; }
+.citacao p { font-size: 36px; line-height: 1.38; max-width: 900px; }
+.citacao p + p { margin-top: 20px; }
+.citacao p b { font-weight: 600; color: #B07402; }
+
+/* eixo */
+.eixo-intro { font-size: 32px; line-height: 1.35; color: #3D5670; margin-top: 22px; max-width: 900px; }
+.lista { list-style: none; margin-top: 36px; display: flex; flex-direction: column; gap: 0; flex: 1; justify-content: center; }
+.lista li { display: grid; grid-template-columns: 64px 1fr; gap: 10px; padding: 18px 0; border-top: 2px dashed rgba(6,51,92,.18); font-size: 31px; line-height: 1.32; }
+.lista li:last-child { border-bottom: 2px dashed rgba(6,51,92,.18); }
+.lista li span { font-family: 'Montserrat'; font-weight: 800; font-size: 26px; color: #0B7880; padding-top: 5px; }
+.lista.longa li { font-size: 28px; padding: 15px 0; }
+
+/* fecho */
+.fecho { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.fecho .logo { width: 300px; margin-bottom: 50px; }
+.fecho h1 { font-size: 88px; }
+.fecho .linha { font-size: 36px; line-height: 1.4; margin-top: 30px; color: rgba(255,255,255,.9); max-width: 880px; }
+.fecho .datas { margin-top: 40px; align-self: flex-start; font-family: 'Montserrat'; font-weight: 800; font-size: 30px; letter-spacing: .1em; text-transform: uppercase; border: 4px solid #EBAB04; padding: 14px 22px; }
+.fecho .site { margin-top: 44px; font-family: 'Montserrat'; font-weight: 700; font-size: 34px; color: #EBAB04; }
+.fecho .site small { display: block; font-size: 19px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.7); margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div id="raiz"></div>
+<script>
+(function () {
+  var pg = new URLSearchParams(location.search).get('p') || 'manifesto';
+  var CUBO = '<svg viewBox="690 218 276 336"><polygon points="697,302 828,225 958,305 828,383" fill="#EBAB04"/><polygon points="697,302 828,383 828,546 777,515 777,413 697,364" fill="#B07402"/><polygon points="828,383 958,305 958,468 828,546" fill="#CB8B02"/></svg>';
+  var topo = function (dir) { return '<div class="topo"><span class="marca">' + CUBO + 'Construir o Futuro</span><span class="dir">' + dir + '</span></div>'; };
+  var rodape = '<div class="rodape"><span>Órgãos Sociais Nacionais da APMGF · 2027–2029</span></div>';
+  var esc = function (t) { return String(t).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); };
+
+  fetch('../conteudo/programa.json').then(function (r) { return r.json(); }).then(function (d) {
+    var html;
+    if (pg === 'manifesto') {
+      // textos do manifesto eleitoral, sem alterações
+      html = '<section class="s claro">' + topo('Manifesto') +
+        '<div class="citacao"><blockquote>Construir não é reagir ao que acontece;<br><em>é antecipar o que vem a seguir.</em></blockquote>' +
+        '<div class="barra"></div>' +
+        '<p>Queremos uma APMGF que antecipe. Queremos uma Medicina Geral e Familiar forte, científica, autónoma, humana e digital.</p>' +
+        '<p>Cada prioridade com um objetivo, um responsável, um prazo e um indicador de resultado. <b>Uma Direção que decide, executa, mede e presta contas.</b></p></div>' +
+        rodape + '</section>';
+    } else if (/^eixo[1-5]$/.test(pg)) {
+      var n = +pg.slice(4), e = d.eixos[n - 1], resto = e.titulo.replace(/^Construir\s+/i, '');
+      html = '<section class="s claro">' + topo('Programa · eixo ' + n + ' de 5') +
+        '<div class="rotulo"><b>Eixo ' + n + '</b><span class="regua"></span></div>' +
+        '<h1>Construir<em>' + esc(resto) + '</em></h1>' +
+        '<p class="eixo-intro">' + esc(e.introducao) + ' Por isso, comprometemo-nos a:</p>' +
+        '<ol class="lista' + (e.propostas.length > 4 ? ' longa' : '') + '">' + e.propostas.map(function (p, i) {
+          return '<li><span>' + String(i + 1).padStart(2, '0') + '</span><div>' + esc(p) + '</div></li>'; }).join('') + '</ol>' +
+        rodape + '</section>';
+    } else {
+      html = '<section class="s escuro">' + topo('APMGF · 2027–2029') +
+        '<div class="fecho"><img class="logo" src="../img/logotipo.svg" alt="">' +
+        '<h1>Contamos<em>com o teu voto.</em></h1>' +
+        '<p class="linha">Votação eletrónica, das 0h00 de 18 de novembro às 12h00 de 28 de novembro.</p>' +
+        '<div class="datas">Vota · 18 a 28 de novembro</div>' +
+        '<div class="site"><small>Manifesto completo, equipa e contributos</small>construirofuturo.github.io</div></div>' +
+        rodape + '</section>';
+    }
+    document.getElementById('raiz').innerHTML = html;
+    return document.fonts.ready;
+  }).then(function () {
+    return Promise.all([].map.call(document.images, function (im) { return im.decode().catch(function () {}); }));
+  }).then(function () { document.body.setAttribute('data-pronto', '1'); });
+})();
+</script>
+</body>
+</html>

@@ -254,10 +254,13 @@ h1 em { font-style: normal; color: #129AA5; }
     var cargo = function (lista, re) { return lista.filter(function (p) { return re.test(p.cargo); }); };
     if (S === 0) {
       // ordem no cubo: topo = Direção (presidente ao centro); esquerda = suplentes da Direção + presidente da Mesa; direita = restantes
-      html = '<section class="s claro">' + topo('A equipa') +
-        '<div class="rotulo"><span>Lista candidata</span><span class="regua"></span></div>' +
-        '<h1>27 peças,<br><em>uma estrutura.</em></h1>' +
-        '<p class="capa-sub">Direção, Mesa da Assembleia Geral e Conselho Fiscal. <b>Conhece quem quer construir o futuro.</b></p>' +
+      var li = /li=1/.test(location.search);   // versão de capa para o documento do LinkedIn
+      html = '<section class="s claro">' + topo(li ? 'APMGF · 2027–2029' : 'A equipa') +
+        '<div class="rotulo"><span>' + (li ? 'Candidatura aos Órgãos Sociais Nacionais' : 'Lista candidata') + '</span><span class="regua"></span></div>' +
+        (li ? '<h1>Construir<br><em>o Futuro.</em></h1>' +
+              '<p class="capa-sub">27 colegas, 5 eixos de ação. <b>Direção, Mesa da Assembleia Geral e Conselho Fiscal.</b></p>'
+            : '<h1>27 peças,<br><em>uma estrutura.</em></h1>' +
+              '<p class="capa-sub">Direção, Mesa da Assembleia Geral e Conselho Fiscal. <b>Conhece quem quer construir o futuro.</b></p>') +
         '<div class="cubo-capa">' + cuboFotos(D.todos) + '</div>' + rodape(true) + '</section>';
     } else if (S === 1) {
       var e = o.direcao.efetivos;
