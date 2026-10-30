@@ -79,6 +79,22 @@ h1 em { font-style: normal; color: #129AA5; }
 .contagem { display: flex; gap: 40px; margin-top: 34px; font-family: 'Montserrat'; }
 .contagem div { font-weight: 800; font-size: 64px; color: #EBAB04; line-height: 1; }
 .contagem span { display: block; font-weight: 700; font-size: 17px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.75); margin-top: 8px; }
+
+/* Página única com toda a lista (equipa.html?unica=1) */
+.u-sec { font-family: 'Montserrat'; font-weight: 800; font-size: 20px; letter-spacing: .14em; text-transform: uppercase; color: #055695;
+  display: flex; align-items: center; gap: 16px; margin: 18px 0 12px; }
+.u-sec small { font-weight: 700; color: #0B7880; letter-spacing: .14em; }
+.u-sec::after { content: ''; flex: 1; border-top: 2px dashed rgba(6,51,92,.28); }
+.u-fila { display: flex; justify-content: center; gap: 6px 10px; flex-wrap: nowrap; }
+.u-fila + .u-fila { margin-top: 12px; }
+.u-c { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.u-c .c-cargo { font-family: 'Montserrat'; font-weight: 700; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: #B07402; margin-top: 7px; line-height: 1.2; }
+.u-c .c-nome { font-family: 'Montserrat'; font-weight: 800; font-size: 15px; line-height: 1.15; color: #06335C; margin-top: 2px; }
+.u-duas { display: grid; grid-template-columns: 1fr 1fr; gap: 0 40px; }
+.u-duas .c-cargo { min-height: 31px; display: flex; align-items: flex-end; }
+.u-duas .c-nome { min-height: 35px; }
+.u-rod { margin-top: auto; display: flex; justify-content: space-between; font-family: 'Montserrat'; font-weight: 700; font-size: 18px; letter-spacing: .1em; text-transform: uppercase; color: #3D5670; }
+.u-rod b { color: #B07402; }
 </style>
 </head>
 <body>
@@ -252,7 +268,28 @@ h1 em { font-style: normal; color: #129AA5; }
   }).then(function (D) {
     var o = D.org, html;
     var cargo = function (lista, re) { return lista.filter(function (p) { return re.test(p.cargo); }); };
-    if (S === 0) {
+    if (/unica=1/.test(location.search)) {
+      var cart = function (p, lado, cor, larg, semCargo) {
+        return '<div class="u-c" style="width:' + larg + 'px">' + bloco(p, lado, cor) +
+          (semCargo ? '' : '<div class="c-cargo">' + p.cargo + '</div>') + '<div class="c-nome">' + p.nome + '</div></div>';
+      };
+      var fila = function (lista, lado, cor, larg, semCargo, ouro) {
+        return '<div class="u-fila">' + lista.map(function (p, i) { return cart(p, lado, ouro && i === 0 ? 'ouro' : cor, larg, semCargo); }).join('') + '</div>';
+      };
+      var d = o.direcao.efetivos, m = o.mesa, f = o.fiscal;
+      html = '<section class="s claro">' + topo('APMGF · Triénio 2027–2029') +
+        '<div class="rotulo"><span>Lista candidata aos Órgãos Sociais Nacionais</span><span class="regua"></span></div>' +
+        '<h1 style="font-size:54px;margin-top:10px">Construir <em>o Futuro</em></h1>' +
+        '<div class="u-sec">Direção <small>· Efetivos</small></div>' +
+        fila(d.slice(0, 4), 104, 'direcao', 176, false, true) + fila(d.slice(4), 92, 'direcao', 170) +
+        '<div class="u-sec">Direção <small>· Suplentes</small></div>' +
+        fila(o.direcao.suplentes, 74, 'direcao', 112, true) +
+        '<div class="u-duas"><div><div class="u-sec">Mesa da Assembleia Geral</div>' +
+          fila(m.efetivos, 84, 'mesa', 144, false, true) + '<div class="u-sec" style="margin-top:14px"><small>Suplentes</small></div>' + fila(m.suplentes, 70, 'mesa', 140, true) + '</div>' +
+        '<div><div class="u-sec">Conselho Fiscal</div>' +
+          fila(f.efetivos, 84, 'fiscal', 144, false, true) + '<div class="u-sec" style="margin-top:14px"><small>Suplentes</small></div>' + fila(f.suplentes, 70, 'fiscal', 140, true) + '</div></div>' +
+        '<div class="u-rod"><span><b>Vota</b> · 18 a 28 de novembro</span><span>construirofuturo.github.io</span></div></section>';
+    } else if (S === 0) {
       // ordem no cubo: topo = Direção (presidente ao centro); esquerda = suplentes da Direção + presidente da Mesa; direita = restantes
       var li = /li=1/.test(location.search), voto = /voto=1/.test(location.search);   // capas do documento do LinkedIn
       html = '<section class="s claro">' + topo(li || voto ? 'APMGF · 2027–2029' : 'A equipa') +
