@@ -145,6 +145,30 @@ svg { display: block; }
     if (!s) return null; var p = s.trim().split(/\s+/), v = p[eixo] || 'center';
     return v === 'center' ? 0.5 : v === 'top' || v === 'left' ? 0 : v === 'bottom' || v === 'right' ? 1 : parseFloat(v) / 100;
   }
+  var QUADRO = {
+    'madalena-leite-rio': [0.50, 0.02, 0.90], 'mario-santos': [0.43, 0.00, 0.92], 'ana-leonor-assuncao-silva': [0.48, 0.02, 0.95],
+    'daniela-emilio': [0.55, 0.02, 0.96], 'edgar-frutuoso-vaz': [0.50, 0.11, 1.40], 'nina-monteiro': [0.48, 0.03, 0.90],
+    'rui-diogo-rodrigues': [0.52, 0.14, 0.85], 'ana-rita-queiros': [0.52, 0.03, 0.55], 'denise-velho': [0.50, 0.12, 0.62],
+    'deolinda-beca-almeida': [0.50, 0.03, 0.75], 'vera-pires-da-silva': [0.48, 0.00, 0.65], 'maria-conceicao-outeirinho': [0.48, 0.00, 0.70],
+    'jose-pedro-antunes': [0.45, 0.02, 0.62], 'nuno-jacinto': [0.48, 0.03, 0.58], 'ligia-churro': [0.50, 0.08, 0.65], 'ana-margarida-cruz': [0.50, 0.05, 0.82], 'ana-maria-sardinha': [0.55, 0.00, 0.82]
+  };
+  // quadrado de cabeça e ombros: [centro x, topo y, lado] em frações da imagem (lado = fração do lado menor)
+  function quadroFixo(img, q) {
+    var w = img.naturalWidth, h = img.naturalHeight, lado = Math.min(w, h) * q[2];
+    var c = document.createElement('canvas'); c.width = c.height = 480; var x = c.getContext('2d');
+    if (lado <= w && lado <= h) {
+      var sx = Math.max(0, Math.min(w - lado, q[0] * w - lado / 2)), sy = Math.max(0, Math.min(h - lado, q[1] * h));
+      x.drawImage(img, sx, sy, lado, lado, 0, 0, 480, 480);
+    } else {
+      // quadrado mais largo do que a foto: prolonga a orla esquerda e direita da própria fotografia
+      var k = 480 / lado, ox = (q[0] * w - lado / 2), oy = Math.max(0, Math.min(h - lado, q[1] * h));
+      var dx = -ox * k, dy = -oy * k, dw = w * k, dh = h * k;
+      if (dx > 0) x.drawImage(img, 0, 0, 2, h, 0, dy, dx + 1, dh);
+      if (dx + dw < 480) x.drawImage(img, w - 2, 0, 2, h, dx + dw - 1, dy, 480 - (dx + dw) + 1, dh);
+      x.drawImage(img, dx, dy, dw, dh);
+    }
+    return c.toDataURL('image/jpeg', 0.92);
+  }
   function quadrado(img, foco, zoom, centro) {
     var w = img.naturalWidth, h = img.naturalHeight, R = 0.8;           // cartão do site: 4:5
     var cw, ch; if (w / h > R) { ch = h; cw = h * R; } else { cw = w; ch = w / R; }
@@ -281,7 +305,7 @@ svg { display: block; }
     d.orgaos.forEach(function (o) { o.grupos.forEach(function (g) { g.pessoas.forEach(function (p) { pessoas.push(p); }); }); });
     return Promise.all(pessoas.map(function (p) {
       return carregar('../fotos/' + p.id + '-atual').then(function (img) {
-        return img ? quadrado(img, p.focoAtual, p.zoomAtual, p.centroZoomAtual) : semFoto(p.nome);
+        return !img ? semFoto(p.nome) : QUADRO[p.id] ? quadroFixo(img, QUADRO[p.id]) : quadrado(img, p.focoAtual, p.zoomAtual, p.centroZoomAtual);
       });
     }));
   }).then(function (srcs) {
