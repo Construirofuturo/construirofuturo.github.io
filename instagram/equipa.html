@@ -95,6 +95,23 @@ h1 em { font-style: normal; color: #129AA5; }
 .u-duas .c-nome { min-height: 35px; }
 .u-rod { margin-top: auto; display: flex; justify-content: space-between; font-family: 'Montserrat'; font-weight: 700; font-size: 18px; letter-spacing: .1em; text-transform: uppercase; color: #3D5670; }
 .u-rod b { color: #B07402; }
+
+/* Capa LinkedIn (equipa.html?capa=banner) e publicação (equipa.html?capa=post) */
+.bn { position: relative; width: 1584px; height: 396px; overflow: hidden; color: #fff; font-family: 'Montserrat';
+  background-color: #03243F; background-image: linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px); background-size: 33px 33px; }
+.bn-txt { position: absolute; left: 450px; top: 58px; width: 520px; }
+.bn-ante { display: flex; align-items: center; gap: 14px; font-weight: 700; font-size: 15px; letter-spacing: .2em; text-transform: uppercase; color: #EBAB04; }
+.bn h1 { color: #fff; font-size: 64px; line-height: .98; margin-top: 14px; }
+.bn h1 em { color: #2EC4CC; display: block; }
+.bn-sub { font-weight: 700; font-size: 17px; letter-spacing: .03em; color: rgba(255,255,255,.82); margin-top: 16px; line-height: 1.4; }
+.bn-cta { display: inline-block; margin-top: 18px; font-weight: 800; font-size: 17px; letter-spacing: .14em; text-transform: uppercase; background: #EBAB04; color: #03243F; padding: 10px 16px; }
+.bn-parede { position: absolute; right: 34px; top: 38px; display: grid; grid-template-columns: repeat(7, 72px); gap: 8px; }
+.bn-parede .t { width: 72px; height: 72px; border-radius: 9px; overflow: hidden; box-shadow: 0 0 0 2px rgba(235,171,4,.75); }
+.bn-parede .t img { width: 100%; height: 100%; display: block; }
+.bn-parede .t.ouro { background: linear-gradient(135deg, #FFD866, #EBAB04 45%, #B07402); color: #03243F; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 15px; line-height: 1.05; text-align: center; text-transform: uppercase; box-shadow: none; }
+.bn-parede .t.ouro small { font-size: 10px; letter-spacing: .1em; }
+.post-cta { align-self: flex-start; margin-top: 10px; font-family: 'Montserrat'; font-weight: 800; font-size: 28px; letter-spacing: .12em; text-transform: uppercase; background: #EBAB04; color: #03243F; padding: 14px 22px; }
 </style>
 </head>
 <body>
@@ -268,7 +285,23 @@ h1 em { font-style: normal; color: #129AA5; }
   }).then(function (D) {
     var o = D.org, html;
     var cargo = function (lista, re) { return lista.filter(function (p) { return re.test(p.cargo); }); };
-    if (/unica=1/.test(location.search)) {
+    if (/capa=banner/.test(location.search)) {
+      document.documentElement.style.cssText = 'width:1584px;height:396px'; document.body.style.cssText = 'width:1584px;height:396px';
+      html = '<section class="bn"><div class="bn-txt"><div class="bn-ante"><span>Candidatura · APMGF 2027–2029</span><span class="regua"></span></div>' +
+        '<h1>Construir<em>o Futuro</em></h1>' +
+        '<div class="bn-sub">27 colegas · 5 eixos de ação · Órgãos Sociais Nacionais</div>' +
+        '<div class="bn-cta">Vota · 18 a 28 de novembro</div></div>' +
+        '<div class="bn-parede">' + D.todos.slice(0, 27).map(function (p) { return '<div class="t"><img src="' + p.foto + '" alt=""></div>'; }).join('') +
+        '<div class="t ouro">18–28<small>nov</small></div></div></section>';
+    } else if (/capa=post/.test(location.search)) {
+      html = '<section class="s claro">' + topo('APMGF · Triénio 2027–2029') +
+        '<div class="rotulo"><span>Candidatura aos Órgãos Sociais Nacionais</span><span class="regua"></span></div>' +
+        '<h1>Construir<br><em>o Futuro.</em></h1>' +
+        '<p class="capa-sub">27 colegas, 5 eixos de ação. <b>Contamos com o teu voto.</b></p>' +
+        '<div class="cubo-capa">' + cuboFotos(D.todos) + '</div>' +
+        '<div class="post-cta">Vota · 18 a 28 de novembro</div>' +
+        '<div class="u-rod" style="margin-top:22px"><span>Votação eletrónica · até 28 nov, 12h00</span><span>construirofuturo.github.io</span></div></section>';
+    } else if (/unica=1/.test(location.search)) {
       var cart = function (p, lado, cor, larg, semCargo) {
         return '<div class="u-c" style="width:' + larg + 'px">' + bloco(p, lado, cor) +
           (semCargo ? '' : '<div class="c-cargo">' + p.cargo + '</div>') + '<div class="c-nome">' + p.nome + '</div></div>';
