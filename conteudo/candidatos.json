@@ -40,7 +40,7 @@
           "grupo": "",
           "pessoas": [
             { "id": "nuno-jacinto", "nome": "Nuno Jacinto", "nomeCompleto": "Nuno Frederico Montalvão Cardoso Jacinto", "cargo": "Presidente" },
-            { "id": "jose-pedro-antunes", "nome": "José Pedro Antunes", "nomeCompleto": "José Pedro Machado Antunes", "cargo": "Primeiro-Secretário" },
+            { "id": "jose-pedro-antunes", "nome": "José Pedro Antunes", "nomeCompleto": "José Pedro Machado Antunes", "cargo": "Primeiro-Secretário", "zoomCrianca": 2.4, "centroZoomCrianca": "53% 26%" },
             { "id": "ana-maria-sardinha", "nome": "Ana Maria Sardinha", "nomeCompleto": "Ana Maria Meira Macedo Sardinha", "cargo": "Segundo-Secretário" }
           ]
         },
