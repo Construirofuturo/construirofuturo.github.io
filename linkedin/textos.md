@@ -26,7 +26,7 @@ No documento estão os passos para votar, o programa e a equipa. Peço-te o teu 
 Construir não é reagir ao que acontece; é antecipar o que vem a seguir.
 
 Com:
-@Nina Monteiro @Gil Correia @Mário Santos @Madalena Leite Rio @Inês Teles @André Reis @Carlos Mestre @Luís Monteiro @Ana Leonor Assunção Silva @Ana Rita Queirós @Denise Velho @Inês Ribeiro de Castro @Lígia Churro @Rui Diogo Rodrigues @Daniela Emílio @Maria Conceição Outeirinho @Nuno Jacinto @José Pedro Antunes @Ana Maria Sardinha @Deolinda Beça Almeida @Vera Pires da Silva @Ana Margarida Cruz @Catarina Bica @Ana Luís Pereira @Edgar Frutuoso Vaz @Miguel Azevedo
+@Nina Monteiro @Gil Correia @Mário Santos @Madalena Leite Rio @Inês Teles @André Reis @Carlos Mestre @Luís Monteiro @Ana Leonor Assunção Silva @Ana Rita Queirós @Denise Velho @Inês Ribeiro de Castro @Lígia Churro @Rui Diogo Rodrigues @Daniela Emílio @Conceição Outeirinho @Nuno Jacinto @José Pedro Antunes @Ana Maria Sardinha @Deolinda Beça Almeida @Vera Pires da Silva @Ana Margarida Cruz @Catarina Bica @Ana Luís Pereira @Edgar Frutuoso Vaz @Miguel Azevedo
 
 #MedicinaGeralEFamiliar #APMGF #CuidadosDeSaúdePrimários #MGF
 
