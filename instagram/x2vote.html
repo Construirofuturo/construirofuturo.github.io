@@ -5,7 +5,7 @@
 <title>Stories x2vote · Construir o Futuro</title>
 <!--
   Stories (1080 × 1920) a explicar o SMS/email da plataforma de voto (x2vote).
-  Uso: x2vote.html?s=1 (é verdadeiro) | ?s=2 (como votar)
+  Uso: x2vote.html?s=1 (recebeste isto?) | ?s=2 (como votar) | ?s=3 (a votação já abriu)
 -->
 <style>
 @font-face { font-family: 'Montserrat'; src: url('../fonts/montserrat.woff2') format('woff2'); font-weight: 600 800; }
@@ -59,7 +59,20 @@ h1 em { font-style: normal; color: #129AA5; display: block; }
 var CUBO = '<svg viewBox="690 218 276 336"><polygon points="697,302 828,225 958,305 828,383" fill="#EBAB04"/><polygon points="697,302 828,383 828,546 777,515 777,413 697,364" fill="#B07402"/><polygon points="828,383 958,305 958,468 828,546" fill="#CB8B02"/></svg>';
 var OK = '<svg viewBox="0 0 48 48" fill="none" stroke="#0B7880" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="20"/><path d="M15 24.5l6 6 12-13"/></svg>';
 var s = +new URLSearchParams(location.search).get('s') || 1, html;
-if (s === 1) {
+if (s === 3) {
+  var OKD = OK.replace('#0B7880', '#EBAB04');
+  html = '<section class="s escuro"><div class="topo">' + CUBO + 'Construir o Futuro</div>' +
+    '<div class="rotulo"><span>Eleições APMGF · 18 a 28 nov</span><span class="regua"></span></div>' +
+    '<h1 style="font-size:96px">A votação<em>já abriu!</em></h1>' +
+    '<div class="tel"><div class="de"><span class="av"></span>x2vote</div>' +
+    '<div class="bolha">Eleicoes APMGF: <a>https://evoting.x2vote.com/ballots/#/login?election=…</a> Utilize a Ced. Profissional e a Chave de Voto: <span class="tapa"></span></div></div>' +
+    '<ul class="checks">' +
+      '<li>' + OKD + '<div>Abre o <b>link</b> que recebeste por SMS ou email.</div></li>' +
+      '<li>' + OKD + '<div>Entra com a <b>cédula profissional</b> e a <b>chave de voto</b>.</div></li>' +
+      '<li>' + OKD + '<div>Vota até <b>28 de novembro, às 12h00</b>.</div></li>' +
+    '</ul>' +
+    '<div class="aviso">Usa sempre o link que a APMGF te enviou. Não partilhes a tua chave de voto.</div></section>';
+} else if (s === 1) {
   html = '<section class="s claro"><div class="topo">' + CUBO + 'Construir o Futuro</div>' +
     '<div class="rotulo"><span>Eleições APMGF</span><span class="regua"></span></div>' +
     '<h1 style="font-size:84px">Recebeste isto?<em>Então estás pronto para votar!</em></h1>' +
