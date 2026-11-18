@@ -51,6 +51,18 @@ h1 em { font-style: normal; color: #129AA5; display: block; }
 .passos h2 { font-family: 'Montserrat'; font-weight: 800; font-size: 40px; text-transform: uppercase; letter-spacing: .01em; }
 .passos p { font-size: 36px; line-height: 1.32; margin-top: 8px; color: rgba(255,255,255,.9); }
 .passos code { font-family: 'Montserrat'; font-weight: 700; font-size: .82em; color: #2EC4CC; }
+
+/* versão sóbria (s=4) */
+.limpo { background: #03243F; color: #fff; padding: 250px 96px 260px; overflow: hidden; }
+.limpo .marca-l { font-family: 'Montserrat'; font-weight: 700; font-size: 26px; letter-spacing: .22em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+.limpo .grande { font-family: 'Montserrat'; font-weight: 800; font-size: 132px; line-height: .98; letter-spacing: -.03em; margin-top: 150px; }
+.limpo .grande span { color: #EBAB04; }
+.limpo .fio { width: 96px; height: 4px; background: #EBAB04; margin: 70px 0 56px; }
+.limpo p { font-family: 'Source Serif 4'; font-size: 42px; line-height: 1.4; color: rgba(255,255,255,.88); max-width: 800px; }
+.limpo p + p { margin-top: 28px; }
+.limpo .ate { margin-top: auto; font-family: 'Montserrat'; font-weight: 700; font-size: 30px; letter-spacing: .14em; text-transform: uppercase; color: #fff; position: relative; z-index: 2; }
+.limpo .ate b { display: block; font-weight: 800; font-size: 64px; letter-spacing: -.01em; text-transform: none; color: #EBAB04; margin-top: 10px; }
+.limpo .logo-c { position: absolute; right: -30px; bottom: 300px; width: 500px; opacity: .9; z-index: 1; }
 </style>
 </head>
 <body>
@@ -59,7 +71,15 @@ h1 em { font-style: normal; color: #129AA5; display: block; }
 var CUBO = '<svg viewBox="690 218 276 336"><polygon points="697,302 828,225 958,305 828,383" fill="#EBAB04"/><polygon points="697,302 828,383 828,546 777,515 777,413 697,364" fill="#B07402"/><polygon points="828,383 958,305 958,468 828,546" fill="#CB8B02"/></svg>';
 var OK = '<svg viewBox="0 0 48 48" fill="none" stroke="#0B7880" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="20"/><path d="M15 24.5l6 6 12-13"/></svg>';
 var s = +new URLSearchParams(location.search).get('s') || 1, html;
-if (s === 3) {
+if (s === 4) {
+  html = '<section class="s limpo"><div class="marca-l">Eleições APMGF</div>' +
+    '<div class="grande">A votação<br>já começou<span>.</span></div>' +
+    '<div class="fio"></div>' +
+    '<p>Abre o link que recebeste da APMGF por SMS ou email.</p>' +
+    '<p>Entra com a tua cédula profissional e a chave de voto.</p>' +
+    '<img class="logo-c" src="../img/logotipo.svg" alt="">' +
+    '<div class="ate">Vota até<b>28 nov · 12h00</b></div></section>';
+} else if (s === 3) {
   var OKD = OK.replace('#0B7880', '#EBAB04');
   html = '<section class="s escuro"><div class="topo">' + CUBO + 'Construir o Futuro</div>' +
     '<div class="rotulo"><span>Eleições APMGF · 18 a 28 nov</span><span class="regua"></span></div>' +
