@@ -78,7 +78,7 @@ h1 em { font-style: normal; color: #129AA5; display: block; }
 .limpo-c .rodape-l { margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; }
 .limpo-c .rodape-l img { width: 230px; margin-right: -10px; }
 .limpo-c .ate { font-family: 'Montserrat'; font-weight: 700; font-size: 28px; letter-spacing: .14em; text-transform: uppercase; color: #3D5670; }
-.limpo-c .ate b { display: block; font-weight: 800; font-size: 62px; letter-spacing: -.01em; text-transform: none; color: #055695; margin-top: 8px; }
+.limpo-c .ate b { display: block; font-weight: 800; font-size: 96px; line-height: 1; letter-spacing: -.01em; text-transform: none; color: #055695; margin-top: 8px; }
 .limpo-c .ate b span { color: #B07402; }
 </style>
 </head>
@@ -92,8 +92,12 @@ if (s === 5) {
   html = '<section class="s limpo-c"><div class="marca-l">Eleições APMGF</div>' +
     '<div class="grande">A votação<br>já começou<span>.</span></div>' +
     '<div class="sms"><div class="de">x2vote</div><div class="b">Eleicoes APMGF: <a>https://evoting.x2vote.com/ballots/#/login?election=…</a> Utilize a Ced. Profissional e a Chave de Voto: <span class="tapa"></span></div></div>' +
-    '<p>Abre o link que recebeste da APMGF e entra com a tua cédula profissional e a chave de voto.</p>' +
-    '<div class="rodape-l"><div class="ate">Vota até<b>28 nov <span>·</span> 12h00</b></div><img src="../img/logotipo.svg" alt=""></div></section>';
+    '<ul class="checks" style="margin-top:56px">' +
+      '<li>' + OK + '<div>Abre o <b>link</b> que recebeste por SMS ou email.</div></li>' +
+      '<li>' + OK + '<div>Entra com a <b>cédula profissional</b> e a <b>chave de voto</b>.</div></li>' +
+      '<li>' + OK + '<div><b>Vota</b>, agora que tens a mensagem à mão.</div></li>' +
+    '</ul>' +
+    '<div class="rodape-l"><div class="ate">Falta a tua peça<b>Vota hoje<span>.</span></b></div><img src="../img/logotipo.svg" alt=""></div></section>';
 } else if (s === 4) {
   html = '<section class="s limpo"><div class="marca-l">Eleições APMGF</div>' +
     '<div class="grande">A votação<br>já começou<span>.</span></div>' +
