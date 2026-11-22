@@ -112,6 +112,19 @@ h1 em { font-style: normal; color: #129AA5; }
   font-weight: 800; font-size: 15px; line-height: 1.05; text-align: center; text-transform: uppercase; box-shadow: none; }
 .bn-parede .t.ouro small { font-size: 10px; letter-spacing: .1em; }
 .post-cta { align-self: flex-start; margin-top: 10px; font-family: 'Montserrat'; font-weight: 800; font-size: 28px; letter-spacing: .12em; text-transform: uppercase; background: #EBAB04; color: #03243F; padding: 14px 22px; }
+
+/* Lista completa, versão em filas (equipa.html?lista=2) */
+.l2-sec { font-family: 'Montserrat'; font-weight: 800; font-size: 21px; letter-spacing: .16em; text-transform: uppercase; color: #055695;
+  display: flex; align-items: center; gap: 18px; margin: 46px 0 24px; }
+.l2-sec::after { content: ''; flex: 1; border-top: 2px dashed rgba(6,51,92,.25); }
+.l2-fila { display: flex; justify-content: space-between; }
+.l2-fila.c { justify-content: space-around; }
+.l2-fila + .l2-fila { margin-top: 30px; }
+.l2-c { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.l2-c .bloco { margin-bottom: 10px; }
+.l2-c .cg { font-family: 'Montserrat'; font-weight: 700; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: #B07402; white-space: nowrap; }
+.l2-fila.apertada .cg { font-size: 9.6px; letter-spacing: .01em; }
+.l2-c .nm { font-family: 'Montserrat'; font-weight: 800; font-size: 15px; line-height: 1.18; color: #06335C; margin-top: 4px; }
 </style>
 </head>
 <body>
@@ -285,7 +298,24 @@ h1 em { font-style: normal; color: #129AA5; }
   }).then(function (D) {
     var o = D.org, html;
     var cargo = function (lista, re) { return lista.filter(function (p) { return re.test(p.cargo); }); };
-    if (/capa=banner/.test(location.search)) {
+    if (/lista=2/.test(location.search)) {
+      var c2 = function (p, lado, cor, larg) {
+        return '<div class="l2-c" style="width:' + larg + 'px">' + bloco(p, lado, cor) +
+          '<div class="cg">' + p.cargo + '</div><div class="nm">' + p.nome + '</div></div>';
+      };
+      var f2 = function (lista, lado, cor, larg, cls) {
+        return '<div class="l2-fila ' + (cls || '') + '">' + lista.map(function (p, i) { return c2(p, lado, /^Presidente/.test(p.cargo) ? 'ouro' : cor, larg); }).join('') + '</div>';
+      };
+      var dd = o.direcao, mm = o.mesa, ff = o.fiscal;
+      html = '<section class="s claro" style="padding:68px 64px 56px">' + topo('APMGF · Triénio 2027–2029') +
+        '<div class="rotulo" style="margin-top:34px"><span>Lista candidata aos Órgãos Sociais Nacionais</span><span class="regua"></span></div>' +
+        '<h1 style="font-size:58px;margin-top:10px">Construir <em style="display:inline">o Futuro</em></h1>' +
+        '<div class="l2-sec">Direção</div>' +
+        f2(dd.efetivos, 84, 'direcao', 104, 'apertada') + f2(dd.suplentes, 90, 'direcao', 117) +
+        '<div class="l2-sec">Mesa da Assembleia Geral</div>' + f2(mm.efetivos.concat(mm.suplentes), 92, 'mesa', 180, 'c') +
+        '<div class="l2-sec">Conselho Fiscal</div>' + f2(ff.efetivos.concat(ff.suplentes), 92, 'fiscal', 180, 'c') +
+        '<div class="u-rod"><span><b>Vota</b> · 18 a 28 de novembro</span><span>construirofuturo.github.io</span></div></section>';
+    } else if (/capa=banner/.test(location.search)) {
       document.documentElement.style.cssText = 'width:1584px;height:396px'; document.body.style.cssText = 'width:1584px;height:396px';
       html = '<section class="bn"><div class="bn-txt"><div class="bn-ante"><span>Candidatura · APMGF 2027–2029</span><span class="regua"></span></div>' +
         '<h1>Construir<em>o Futuro</em></h1>' +
