@@ -297,7 +297,8 @@ h1 em { font-style: normal; color: #129AA5; }
     })).then(function () { return { todos: todos, org: org }; });
   }).then(function (D) {
     var o = D.org, html;
-    var cargo = function (lista, re) { return lista.filter(function (p) { return re.test(p.cargo); }); };
+    var HOJE = /hoje=1/.test(location.search);
+  var cargo = function (lista, re) { return lista.filter(function (p) { return re.test(p.cargo); }); };
     if (/lista=2/.test(location.search)) {
       var c2 = function (p, lado, cor, larg) {
         return '<div class="l2-c" style="width:' + larg + 'px">' + bloco(p, lado, cor) +
@@ -314,7 +315,7 @@ h1 em { font-style: normal; color: #129AA5; }
         f2(dd.efetivos, 84, 'direcao', 104, 'apertada') + f2(dd.suplentes, 90, 'direcao', 117) +
         '<div class="l2-sec">Mesa da Assembleia Geral</div>' + f2(mm.efetivos.concat(mm.suplentes), 92, 'mesa', 180, 'c') +
         '<div class="l2-sec">Conselho Fiscal</div>' + f2(ff.efetivos.concat(ff.suplentes), 92, 'fiscal', 180, 'c') +
-        '<div class="u-rod"><span><b>Vota</b> · 18 a 28 de novembro</span><span>construirofuturo.github.io</span></div></section>';
+        '<div class="u-rod"><span>' + (/hoje=1/.test(location.search) ? '<b>Vota hoje</b> · usa o link da APMGF' : '<b>Vota</b> · 18 a 28 de novembro') + '</span><span>construirofuturo.github.io</span></div></section>';
     } else if (/capa=banner/.test(location.search)) {
       document.documentElement.style.cssText = 'width:1584px;height:396px'; document.body.style.cssText = 'width:1584px;height:396px';
       html = '<section class="bn"><div class="bn-txt"><div class="bn-ante"><span>Candidatura · APMGF 2027–2029</span><span class="regua"></span></div>' +
@@ -329,8 +330,8 @@ h1 em { font-style: normal; color: #129AA5; }
         '<h1>Construir<br><em>o Futuro.</em></h1>' +
         '<p class="capa-sub">27 colegas, 5 eixos de ação. <b>Contamos com o teu voto.</b></p>' +
         '<div class="cubo-capa">' + cuboFotos(D.todos) + '</div>' +
-        '<div class="post-cta">Vota · 18 a 28 de novembro</div>' +
-        '<div class="u-rod" style="margin-top:22px"><span>Votação eletrónica · até 28 nov, 12h00</span><span>construirofuturo.github.io</span></div></section>';
+        '<div class="post-cta">' + (/hoje=1/.test(location.search) ? 'A votação está aberta · Vota hoje' : 'Vota · 18 a 28 de novembro') + '</div>' +
+        '<div class="u-rod" style="margin-top:22px"><span>' + (/hoje=1/.test(location.search) ? 'Usa o link que recebeste da APMGF' : 'Votação eletrónica · até 28 nov, 12h00') + '</span><span>construirofuturo.github.io</span></div></section>';
     } else if (/unica=1/.test(location.search)) {
       var cart = function (p, lado, cor, larg, semCargo) {
         return '<div class="u-c" style="width:' + larg + 'px">' + bloco(p, lado, cor) +
